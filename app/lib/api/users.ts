@@ -7,11 +7,17 @@ type ICreateUser = {
   name: string;
 };
 
-export const create = async (user: ICreateUser): Promise<[DocumentData | undefined, any]> => {
+type IUser = {
+  id: string;
+  name: string;
+};
+
+export const create = async (user: ICreateUser): Promise<[IUser | undefined, any]> => {
   let result, error;
 
   try {
-    result = await addDoc(collection(firestore, "users"), user);
+    const document = await addDoc(collection(firestore, "users"), user);
+    [result] = await get(document.id);
   } catch (e) {
     error = e;
   }
@@ -19,11 +25,15 @@ export const create = async (user: ICreateUser): Promise<[DocumentData | undefin
   return [result, error];
 };
 
-export const get = async (id: string): Promise<[DocumentData | undefined, any]> => {
+export const get = async (id: string): Promise<[IUser | undefined, any]> => {
   let result, error;
 
   try {
-    result = await getDoc(doc(firestore, `users/${id}`));
+    const document = await getDoc(doc(firestore, `users/${id}`));
+    result = {
+      id: document.id,
+      ...document.data(),
+    } as IUser;
   } catch (e) {
     error = e;
   }

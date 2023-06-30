@@ -17,14 +17,14 @@ export default function Room({ params }: RoomParams) {
   const [room, setRoom] = useState<IRoom>();
 
   useEffect(() => {
+    const getRoom = async () => {
+      const [room, error] = await api.rooms.get(params.id);
+
+      setRoom(room as IRoom);
+    };
+
     getRoom();
-  });
-
-  const getRoom = async () => {
-    const [room, error] = await api.rooms.get(params.id);
-
-    setRoom(room as IRoom);
-  };
+  }, [params.id]);
 
   return (
     <div>

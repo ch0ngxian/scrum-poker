@@ -7,10 +7,15 @@ import { api } from "./lib/api";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
+type IUser = {
+  id: string;
+  name: string;
+};
+
 export default function Home() {
   const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
-  const [userId, setUserId] = useState<string>("");
+  const [user, setUser] = useState<IUser>();
 
   useEffect(() => {
     getUser();
@@ -18,17 +23,15 @@ export default function Home() {
 
   const getUser = async () => {
     const id = Cookies.get("u");
-
     if (!id) return;
 
     const [user, error] = await api.users.get(id);
-
-    if (!user?.id) {
+    if (!user) {
       Cookies.remove("u");
       return;
     }
 
-    setUserId(user.id);
+    setUser(user);
     Cookies.set("u", user.id, { expires: 7 });
 
     return user;
@@ -37,18 +40,18 @@ export default function Home() {
   const createRoom = async () => {
     if (!nameRef.current?.value) return;
 
-    if (!userId) {
+    if (!user) {
       const [user, error] = await api.users.create({ name: nameRef.current.value });
-      if (!user?.id) return;
+      if (!user) return;
 
-      setUserId(user.id);
+      setUser(user);
       Cookies.set("u", user.id, { expires: 7 });
     }
 
-    if (!userId) return;
+    if (!user) return;
 
     const [room, error] = await api.rooms.create({
-      ownerId: userId,
+      ownerId: user.id,
     });
 
     router.push(`/rooms/${room?.id}`);
@@ -61,7 +64,7 @@ export default function Home() {
           <h1 className="font-black text-6xl">Estimate story point easily</h1>
 
           <div className="my-10">
-            <Textfield label="Name" ref={nameRef}></Textfield>
+            <Textfield label="Name" value={user?.name} ref={nameRef}></Textfield>
             <Button text="Create room" onClick={createRoom}></Button>
           </div>
         </div>
