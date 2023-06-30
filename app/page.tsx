@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Button } from "./components/Button";
 import { Textfield } from "./components/Textfield";
 import { api } from "./lib/api";
