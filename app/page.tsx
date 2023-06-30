@@ -6,6 +6,7 @@ import { Textfield } from "./components/Textfield";
 import { api } from "./lib/api";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { useUserContext } from "./user-provider";
 
 type IUser = {
   id: string;
@@ -15,27 +16,7 @@ type IUser = {
 export default function Home() {
   const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
-  const [user, setUser] = useState<IUser>();
-
-  useEffect(() => {
-    getUser();
-  }, []);
-
-  const getUser = async () => {
-    const id = Cookies.get("u");
-    if (!id) return;
-
-    const [user, error] = await api.users.get(id);
-    if (!user) {
-      Cookies.remove("u");
-      return;
-    }
-
-    setUser(user);
-    Cookies.set("u", user.id, { expires: 7 });
-
-    return user;
-  };
+  const [user, setUser] = useUserContext();
 
   const createRoom = async () => {
     if (!nameRef.current?.value) return;
