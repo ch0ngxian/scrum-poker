@@ -27,12 +27,11 @@ const OwnerView = () => {
   );
 };
 
-const MemberView = ({ room }: { room: IRoom | null }) => {
+const MemberView = ({ room }: { room: IRoom }) => {
   const nameRef = useRef<HTMLInputElement>(null);
   const [user, setUser] = useUserContext();
 
   const joinRoom = async () => {
-    if (!room) return;
     if (!nameRef.current?.value) return;
 
     if (!user) {
@@ -53,7 +52,7 @@ const MemberView = ({ room }: { room: IRoom | null }) => {
   };
 
   const isInsideRoom = () => {
-    if (!user || !room) return false;
+    if (!user) return false;
 
     return room.members.find((member) => {
       return member.user.id == user.id;
@@ -64,23 +63,24 @@ const MemberView = ({ room }: { room: IRoom | null }) => {
 
   return (
     <div>
-      {room && (
-        <div>
-          <div className="flex">
-            {room.members.map((member, index) => (
-              <div key={index} className="rounded-full bg-slate-700 m-5 h-36 w-36 flex justify-center items-center text-center">
-                {member.user.name}
-              </div>
-            ))}
-          </div>
-          {!isInsideRoom() && (
-            <div className="my-10">
-              <Textfield label="Name" value={user?.name} ref={nameRef}></Textfield>
-              <Button text="Join room" onClick={joinRoom}></Button>
-            </div>
-          )}
+      {!isInsideRoom() && (
+        <div className="my-10">
+          <Textfield label="Name" value={user?.name} ref={nameRef}></Textfield>
+          <Button text="Join room" onClick={joinRoom}></Button>
         </div>
       )}
+    </div>
+  );
+};
+
+const MemberList = ({ room }: { room: IRoom }) => {
+  return (
+    <div className="flex">
+      {room.members.map((member, index) => (
+        <div key={index} className="rounded-full bg-slate-700 m-5 h-36 w-36 flex justify-center items-center text-center">
+          {member.user.name}
+        </div>
+      ))}
     </div>
   );
 };
@@ -120,5 +120,14 @@ export default function Room({ params }: RoomParams) {
     getRoom();
   }, [params.id]);
 
-  return <div>{room && user?.id == room.owner.id ? <OwnerView></OwnerView> : <MemberView room={room}></MemberView>}</div>;
+  return (
+    <div>
+      {room && (
+        <div>
+          <MemberList room={room}></MemberList>
+          {user?.id == room.owner.id ? <OwnerView></OwnerView> : <MemberView room={room}></MemberView>}
+        </div>
+      )}
+    </div>
+  );
 }
