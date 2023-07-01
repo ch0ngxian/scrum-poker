@@ -11,6 +11,7 @@ import {
   SnapshotOptions,
   arrayUnion,
   updateDoc,
+  DocumentReference,
 } from "firebase/firestore";
 import { IUser } from "./users";
 import { api } from "@/app/lib/api";
@@ -28,6 +29,7 @@ type JoinRoomParams = {
 export type IRoom = {
   id: string;
   owner: IUser;
+  members: Array<{ user: IUser; is_moderator: boolean }>;
 };
 
 export const create = async (params: CreateRoomParams): Promise<[IRoom | null, any]> => {
@@ -58,12 +60,24 @@ export const get = async (id: string): Promise<[IRoom | null, any]> => {
 
   try {
     const document = await getDoc(doc(firestore, `rooms/${id}`));
-    const [owner] = await api.users.get(document.data()?.owner.id);
 
-    result = {
-      id: document.id,
-      owner: owner,
-    } as IRoom;
+    if (document.exists()) {
+      const data = document.data();
+      const [owner] = await api.users.get(data.owner.id);
+
+      const members = data.members.map(async ({ user, is_moderator }: { user: DocumentReference; is_moderator: boolean }) => {
+        return {
+          user: { id: user.id, ...(await getDoc(doc(firestore, `users/${user.id}`))).data() } as IUser,
+          is_moderator: is_moderator,
+        };
+      });
+
+      result = {
+        id: document.id,
+        owner: owner,
+        members: await Promise.all(members),
+      } as IRoom;
+    }
   } catch (e) {
     error = e;
   }
