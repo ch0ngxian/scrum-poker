@@ -1,0 +1,29 @@
+{
+  "owner": {
+    "id": "mhgydh5CtYyRPsLSgr1N",
+    "name": "Jason"
+  },
+  "members": [
+    {
+      "id": "mhgydh5CtYyRPsLSgr1N",
+      "name": "Jason",
+      "is_moderator": true
+    },
+    {
+      "id": "harFp45gmLFEcCxKy7An",
+      "name": "Karen",
+      "is_moderator": false
+    },
+    {
+      "id": "5PQak5TuEtWFVfKlbLVA",
+      "name": "David",
+      "is_moderator": false
+    }
+  ],
+  "estimation_sessions": [],
+  "current_estimation_session": {
+    "mhgydh5CtYyRPsLSgr1N": 5,
+    "harFp45gmLFEcCxKy7An": 3,
+    "5PQak5TuEtWFVfKlbLVA": 3
+  }
+}

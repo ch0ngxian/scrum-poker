@@ -1,17 +1,50 @@
 import firebase from "../firebase";
-import { getFirestore, collection, doc, addDoc, getDoc, DocumentData } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  DocumentData,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+  SnapshotOptions,
+  arrayUnion,
+  updateDoc,
+} from "firebase/firestore";
+import { IUser } from "./users";
+import { api } from "@/app/lib/api";
 
 const firestore = getFirestore(firebase);
 
-type ICreateRoom = {
-  ownerId: string;
+type CreateRoomParams = {
+  owner: IUser;
 };
 
-export const create = async (room: ICreateRoom): Promise<[DocumentData | undefined, any]> => {
-  let result, error;
+type JoinRoomParams = {
+  member: IUser;
+};
+
+export type IRoom = {
+  id: string;
+  owner: IUser;
+};
+
+export const create = async (params: CreateRoomParams): Promise<[IRoom | null, any]> => {
+  let result = null,
+    error;
 
   try {
-    result = await addDoc(collection(firestore, "rooms"), room);
+    const document = await addDoc(collection(firestore, "rooms"), {
+      owner: doc(firestore, `users/${params.owner.id}`),
+      members: [
+        {
+          user: doc(firestore, `users/${params.owner.id}`),
+          is_moderator: true,
+        },
+      ],
+    });
+    [result] = await get(document.id);
   } catch (e) {
     error = e;
   }
@@ -19,11 +52,35 @@ export const create = async (room: ICreateRoom): Promise<[DocumentData | undefin
   return [result, error];
 };
 
-export const get = async (id: string): Promise<[DocumentData | undefined, any]> => {
-  let result, error;
+export const get = async (id: string): Promise<[IRoom | null, any]> => {
+  let result = null,
+    error;
 
   try {
-    result = (await getDoc(doc(firestore, `rooms/${id}`))).data();
+    const document = await getDoc(doc(firestore, `rooms/${id}`));
+    const [owner] = await api.users.get(document.data()?.owner.id);
+
+    result = {
+      id: document.id,
+      owner: owner,
+    } as IRoom;
+  } catch (e) {
+    error = e;
+  }
+
+  return [result, error];
+};
+
+export const join = async (id: string, params: JoinRoomParams): Promise<[boolean, any]> => {
+  let result = false,
+    error;
+
+  try {
+    const document = await updateDoc(doc(firestore, `rooms/${id}`), {
+      members: arrayUnion({ user: doc(firestore, `users/${params.member.id}`), is_moderator: false }),
+    });
+
+    result = true;
   } catch (e) {
     error = e;
   }

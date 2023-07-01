@@ -3,16 +3,12 @@
 import Cookies from "js-cookie";
 import { createContext, useContext, useState, useEffect, SetStateAction, Dispatch } from "react";
 import { api } from "./lib/api";
+import { IUser } from "./lib/api/users";
 
-type IUser = null | {
-  id: string;
-  name: string;
-};
-
-const UserContext = createContext<[IUser, Dispatch<SetStateAction<IUser>>]>([null, (user) => {}]);
+const UserContext = createContext<[IUser | null, Dispatch<SetStateAction<IUser | null>>]>([null, (user) => {}]);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<IUser>(null);
+  const [user, setUser] = useState<IUser | null>(null);
 
   useEffect(() => {
     getUser();
@@ -28,7 +24,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    setUser(user);
+    setUser(user as IUser);
     Cookies.set("u", user.id, { expires: 7 });
 
     return user;

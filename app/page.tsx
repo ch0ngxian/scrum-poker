@@ -7,11 +7,10 @@ import { api } from "./lib/api";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useUserContext } from "./user-provider";
+import { doc, getFirestore } from "firebase/firestore";
+import firebase from "./lib/firebase";
 
-type IUser = {
-  id: string;
-  name: string;
-};
+const firestore = getFirestore(firebase);
 
 export default function Home() {
   const router = useRouter();
@@ -32,7 +31,7 @@ export default function Home() {
     if (!user) return;
 
     const [room, error] = await api.rooms.create({
-      ownerId: user.id,
+      owner: user,
     });
 
     router.push(`/rooms/${room?.id}`);

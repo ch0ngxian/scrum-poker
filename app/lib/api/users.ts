@@ -7,12 +7,12 @@ type ICreateUser = {
   name: string;
 };
 
-type IUser = null | {
+export type IUser = {
   id: string;
   name: string;
 };
 
-export const create = async (user: ICreateUser): Promise<[IUser, any]> => {
+export const create = async (user: ICreateUser): Promise<[IUser | null, any]> => {
   let result = null,
     error;
 
@@ -26,7 +26,7 @@ export const create = async (user: ICreateUser): Promise<[IUser, any]> => {
   return [result, error];
 };
 
-export const get = async (id: string): Promise<[IUser, any]> => {
+export const get = async (id: string): Promise<[IUser | null, any]> => {
   let result = null,
     error;
 

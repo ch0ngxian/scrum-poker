@@ -2,6 +2,8 @@
 import { Button } from "@/app/components/Button";
 import { Textfield } from "@/app/components/Textfield";
 import { api } from "@/app/lib/api";
+import { IRoom } from "@/app/lib/api/rooms";
+import { useUserContext } from "@/app/user-provider";
 import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,16 +11,6 @@ type RoomParams = {
   params: {
     id: string;
   };
-};
-
-type IRoom = {
-  id: string;
-  ownerId: string;
-};
-
-type IUser = {
-  id: string;
-  name: string;
 };
 
 const OwnerView = () => {
@@ -30,50 +22,55 @@ const OwnerView = () => {
   );
 };
 
-const MemberView = (user: IUser) => {
+const MemberView = ({ room }: { room: IRoom | null }) => {
   const nameRef = useRef<HTMLInputElement>(null);
+  const [user, setUser] = useUserContext();
+
+  const joinRoom = async () => {
+    if (!room) return;
+    if (!nameRef.current?.value) return;
+
+    if (!user) {
+      const [user, error] = await api.users.create({ name: nameRef.current.value });
+      if (!user) return;
+
+      setUser(user);
+      Cookies.set("u", user.id, { expires: 7 });
+    }
+
+    if (!user) return;
+
+    const [isSuccess, error] = await api.rooms.join(room.id, {
+      member: user,
+    });
+
+    if (!isSuccess) return;
+  };
 
   return (
     <div>
       <div className="my-10">
         <Textfield label="Name" value={user?.name} ref={nameRef}></Textfield>
-        <Button text="Join room"></Button>
+        <Button text="Join room" onClick={joinRoom}></Button>
       </div>
     </div>
   );
 };
 
 export default function Room({ params }: RoomParams) {
-  const [room, setRoom] = useState<IRoom>();
-  const [user, setUser] = useState<IUser>();
+  const [room, setRoom] = useState<IRoom | null>(null);
+  const [user] = useUserContext();
 
   useEffect(() => {
     const getRoom = async () => {
       const [room, error] = await api.rooms.get(params.id);
       if (!room) return;
 
-      setRoom(room as IRoom);
+      setRoom(room);
     };
 
     getRoom();
-    getUser();
   }, [params.id]);
 
-  const getUser = async () => {
-    const id = Cookies.get("u");
-    if (!id) return;
-
-    const [user, error] = await api.users.get(id);
-    if (!user) {
-      Cookies.remove("u");
-      return;
-    }
-
-    setUser(user);
-    Cookies.set("u", user.id, { expires: 7 });
-
-    return user;
-  };
-
-  return <div>{room && user?.id == room.ownerId ? <OwnerView></OwnerView> : <MemberView user={user}></MemberView>}</div>;
+  return <div>{room && user?.id == room.owner.id ? <OwnerView></OwnerView> : <MemberView room={room}></MemberView>}</div>;
 }
