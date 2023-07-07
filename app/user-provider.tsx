@@ -1,36 +1,56 @@
 "use client";
 
 import Cookies from "js-cookie";
-import { createContext, useContext, useState, useEffect, SetStateAction, Dispatch } from "react";
-import { api } from "./lib/api";
-import { IUser } from "./lib/api/users";
+import { createContext, useContext, useState, useEffect } from "react";
+import { User } from "@/lib/types";
 
-const UserContext = createContext<[IUser | null, Dispatch<SetStateAction<IUser | null>>]>([null, (user) => {}]);
+const UserContext = createContext<[User | null, ({ name }: { name: string }) => Promise<User | null>]>([
+  null,
+  async () => {
+    return null;
+  },
+]);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<IUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     getUser();
   }, []);
 
   const getUser = async () => {
-    const id = Cookies.get("u");
-    if (!id) return;
+    const token = Cookies.get("u");
+    if (!token) return;
 
-    const [user, error] = await api.users.get(id);
+    const response = await fetch(`/api/users`);
+    const user = (await response.json()) as User;
+
     if (!user) {
       Cookies.remove("u");
       return;
     }
 
-    setUser(user as IUser);
-    Cookies.set("u", user.id, { expires: 7 });
+    setUser(user as User);
+    Cookies.set("u", `${user.token}`, { expires: 7 });
 
     return user;
   };
 
-  return <UserContext.Provider value={[user, setUser]}>{children}</UserContext.Provider>;
+  const createUser = async ({ name }: { name: string }) => {
+    const response = await fetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify({ name: name }),
+    });
+
+    const user = (await response.json()) as User;
+
+    setUser(user);
+    Cookies.set("u", `${user.token}`, { expires: 7 });
+
+    return user;
+  };
+
+  return <UserContext.Provider value={[user, createUser]}>{children}</UserContext.Provider>;
 }
 
 export function useUserContext() {

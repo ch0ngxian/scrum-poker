@@ -3,38 +3,31 @@
 import { useRef } from "react";
 import { Button } from "./components/Button";
 import { Textfield } from "./components/Textfield";
-import { api } from "./lib/api";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { useUserContext } from "./user-provider";
-import { doc, getFirestore } from "firebase/firestore";
-import firebase from "./lib/firebase";
-
-const firestore = getFirestore(firebase);
+import { Room } from "@/lib/types";
 
 export default function Home() {
   const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
-  const [user, setUser] = useUserContext();
+  const [user, createUser] = useUserContext();
 
   const createRoom = async () => {
     if (!nameRef.current?.value) return;
 
-    if (!user) {
-      const [user, error] = await api.users.create({ name: nameRef.current.value });
-      if (!user) return;
-
-      setUser(user);
-      Cookies.set("u", user.id, { expires: 7 });
-    }
-
+    if (!user) await createUser({ name: nameRef.current.value });
+    console.log(user);
     if (!user) return;
 
-    const [room, error] = await api.rooms.create({
-      owner: user,
+    const response = await fetch("/api/rooms", {
+      method: "POST",
+      body: JSON.stringify({ ownerId: user.id }),
     });
 
-    router.push(`/rooms/${room?.id}`);
+    const room = (await response.json()) as Room;
+    if (!room) return;
+
+    router.push(`/rooms/${room.id}`);
   };
 
   return (
