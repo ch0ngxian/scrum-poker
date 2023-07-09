@@ -13,5 +13,7 @@ export async function POST(request: Request) {
     })
     .select();
 
-  return NextResponse.json(data);
+  if (!data) return NextResponse.error();
+
+  return NextResponse.json(data[0]);
 }

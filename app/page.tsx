@@ -16,7 +16,6 @@ export default function Home() {
     if (!nameRef.current?.value) return;
 
     if (!user) await createUser({ name: nameRef.current.value });
-    console.log(user);
     if (!user) return;
 
     const response = await fetch("/api/rooms", {
