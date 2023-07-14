@@ -6,13 +6,12 @@ export async function GET(request: Request) {
   const supabase = createRouteHandlerClient({ cookies });
 
   const token = cookies().get("u")?.value;
-  if (!token) return NextResponse.error();
+  if (!token) return NextResponse.json({ error: "User token is require" }, { status: 500 });
 
-  const { data, error } = await supabase.from("users").select().eq("token", token);
+  const { data: user } = await supabase.from("users").select().eq("token", token).limit(1).single();
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 500 });
 
-  if (!data) return NextResponse.error();
-
-  return NextResponse.json(data[0]);
+  return NextResponse.json(user);
 }
 
 export async function POST(request: Request) {
@@ -27,7 +26,7 @@ export async function POST(request: Request) {
     })
     .select();
 
-  if (!data) return NextResponse.error();
+  if (!data) return NextResponse.json({ error: "Fail to create user" }, { status: 500 });
 
   return NextResponse.json(data[0]);
 }

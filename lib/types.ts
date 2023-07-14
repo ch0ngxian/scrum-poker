@@ -1,16 +1,19 @@
 export interface User {
-  id: Number;
+  id: number;
   name: string;
   token: string;
 }
 
 export interface Room {
-  id: Number;
-  owner_id: Number;
+  id: number;
+  owner_id: number;
+  handle: string;
+  owner: User;
+  members: User[];
 }
 
 export interface RoomUsers {
-  id: Number;
-  room_id: Number;
-  user_id: Number;
+  id: number;
+  room_id: number;
+  user_id: number;
 }
