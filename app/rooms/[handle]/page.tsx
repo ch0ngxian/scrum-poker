@@ -5,7 +5,6 @@ import { Textfield } from "@/app/components/Textfield";
 import { useUserContext } from "@/app/user-provider";
 import supabase from "@/lib/supabase";
 import { Room, User } from "@/lib/types";
-import { RealtimePostgresInsertPayload } from "@supabase/supabase-js";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -51,11 +50,9 @@ function MemberView({ room }: { room: Room }) {
 
   async function joinRoom() {
     if (!name) return;
-
     if (!user) await createUser({ name: name });
-    if (!user) return;
 
-    const response = await fetch(`/api/rooms/${room.handle}/join`, { method: "POST" });
+    await fetch(`/api/rooms/${room.handle}/join`, { method: "POST" });
   }
 
   const isJoined = room.members.find((member) => member.token == user?.token) != null;

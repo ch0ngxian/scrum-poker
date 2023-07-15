@@ -14,12 +14,10 @@ export default function Home() {
 
   const createRoom = async () => {
     if (!user) await createUser({ name: name });
-    if (!user) return;
 
     const response = await fetch("/api/rooms", {
       method: "POST",
     });
-
     const room = (await response.json()) as Room;
     if (!room) return;
 
