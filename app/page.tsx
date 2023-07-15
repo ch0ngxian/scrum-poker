@@ -36,7 +36,7 @@ export default function Home() {
 
           <div className="my-10">
             <Textfield label="Name" value={name} onChange={(event) => setName(event.target.value)}></Textfield>
-            <Button text="Create room" onClick={createRoom}></Button>
+            <Button onClick={createRoom}>Create room</Button>
           </div>
         </div>
         <div className="bg-slate-700 rounded-md w-full m-5"></div>

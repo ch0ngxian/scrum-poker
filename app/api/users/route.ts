@@ -22,7 +22,6 @@ export async function POST(request: Request) {
     .from("users")
     .insert({
       name: name,
-      token: crypto.randomUUID(),
     })
     .select();
 

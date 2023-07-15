@@ -15,7 +15,6 @@ export async function POST(request: Request) {
     .from("rooms")
     .insert({
       owner_id: user.id,
-      handle: crypto.randomUUID(),
     })
     .select()
     .limit(1)

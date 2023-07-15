@@ -31,11 +31,15 @@ function MemberList({ members }: { members: User[] }) {
   );
 }
 
-function OwnerView() {
+function OwnerView({ room }: { room: Room }) {
+  const startRoom = async () => {};
+
   return (
     <div>
       <div>Share your room</div>
       {`${window.location.href}`}
+
+      <Button onClick={startRoom}>Start</Button>
     </div>
   );
 }
@@ -67,7 +71,7 @@ function MemberView({ room }: { room: Room }) {
 
       <div className="my-10">
         <Textfield label="Name" value={name} onChange={(event) => setName(event.target.value)}></Textfield>
-        <Button text="Join room" onClick={joinRoom}></Button>
+        <Button onClick={joinRoom}>Join room</Button>
       </div>
     </div>
   );
@@ -122,7 +126,7 @@ export default function RoomView({ params }: RoomParams) {
   return (
     <div className="flex flex-col items-center">
       <div className="m-3">{<MemberList members={room.members}></MemberList>}</div>
-      <div>{isOwner ? <OwnerView></OwnerView> : <MemberView room={room}></MemberView>}</div>
+      <div>{isOwner ? <OwnerView room={room}></OwnerView> : <MemberView room={room}></MemberView>}</div>
     </div>
   );
 }
