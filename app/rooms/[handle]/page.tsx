@@ -7,7 +7,8 @@ import supabase from "@/lib/supabase";
 import { Room, User, VotingSession } from "@/lib/types";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import VotingSessionView from "./components/VotingSession";
 
 type RoomParams = {
   params: {
@@ -171,15 +172,7 @@ export default function RoomView({ params }: RoomParams) {
   const isOwner = room.owner.token == Cookies.get("u");
 
   if (votingSession) {
-    return (
-      <div className="flex justify-center">
-        {room.allowed_points.map((point, index) => (
-          <div className="m-3 rounded h-28 w-20 bg-slate-400 flex justify-center items-center" key={index}>
-            {point}
-          </div>
-        ))}
-      </div>
-    );
+    return <VotingSessionView room={room}></VotingSessionView>;
   }
 
   return (
