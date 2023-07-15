@@ -4,10 +4,10 @@ import { Button } from "@/app/components/Button";
 import { Textfield } from "@/app/components/Textfield";
 import { useUserContext } from "@/app/user-provider";
 import supabase from "@/lib/supabase";
-import { Room, User } from "@/lib/types";
+import { Room, User, VotingSession } from "@/lib/types";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type RoomParams = {
   params: {
@@ -32,7 +32,11 @@ function MemberList({ members }: { members: User[] }) {
 }
 
 function OwnerView({ room }: { room: Room }) {
-  const startRoom = async () => {};
+  const startRoom = async () => {
+    await fetch(`/api/rooms/${room.handle}/start`, {
+      method: "POST",
+    });
+  };
 
   return (
     <div>
@@ -62,7 +66,7 @@ function MemberView({ room }: { room: Room }) {
   const isJoined = room.members.find((member) => member.token == user?.token) != null;
 
   if (isJoined) {
-    return <div>Joined</div>;
+    return <div>Waiting to start</div>;
   }
 
   return (
@@ -80,6 +84,7 @@ function MemberView({ room }: { room: Room }) {
 export default function RoomView({ params }: RoomParams) {
   const router = useRouter();
   const [room, setRoom] = useState<Room | null>(null);
+  const [votingSession, setVotingSession] = useState<VotingSession | null>(null);
 
   useEffect(() => {
     const getRoom = async () => {
@@ -93,11 +98,28 @@ export default function RoomView({ params }: RoomParams) {
     };
 
     getRoom();
+  }, [params.handle, router]);
 
+  useEffect(() => {
+    const getVotingSession = async () => {
+      if (!room || !room.active_voting_session_id) return;
+      const response = await fetch(`/api/rooms/${room.handle}/sessions/${room.active_voting_session_id}`);
+
+      const session = (await response.json()) as VotingSession;
+      if (!session) return;
+
+      setVotingSession(session);
+      return room;
+    };
+
+    getVotingSession();
+  }, [room]);
+
+  useEffect(() => {
     if (!room) return;
 
-    const channel = supabase
-      .channel(`${room.handle}`)
+    const roomMembersChannel = supabase
+      .channel(`room-${room.handle}-members`)
       .on(
         "postgres_changes",
         {
@@ -106,23 +128,51 @@ export default function RoomView({ params }: RoomParams) {
           filter: `room_id=eq.${room.id}`,
           event: "INSERT",
         },
-        () => {
-          getRoom();
+        async () => {
+          const response = await fetch(`/api/rooms/${params.handle}`);
+
+          const room = (await response.json()) as Room;
+          if (!room.id) return;
+
+          setRoom(room);
+        }
+      )
+      .subscribe();
+
+    const roomChannel = supabase
+      .channel(`room-${room.handle}`)
+      .on(
+        "postgres_changes",
+        {
+          schema: "public",
+          table: "rooms",
+          filter: `id=eq.${room.id}`,
+          event: "UPDATE",
+        },
+        async (payload) => {
+          const newRoom = payload.new;
+
+          const response = await fetch(`/api/rooms/${params.handle}/sessions/${newRoom.active_voting_session_id}`);
+          const session = (await response.json()) as VotingSession;
+
+          setVotingSession(session);
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(roomMembersChannel);
+      supabase.removeChannel(roomChannel);
     };
-  }, [params.handle, router, room]);
+  }, [params.handle, room]);
 
-  if (!room) {
-    return "Empty room";
-  }
+  if (!room) return "Empty room";
 
   const isOwner = room.owner.token == Cookies.get("u");
 
+  if (votingSession) {
+    return <div>Card</div>;
+  }
   return (
     <div className="flex flex-col items-center">
       <div className="m-3">{<MemberList members={room.members}></MemberList>}</div>

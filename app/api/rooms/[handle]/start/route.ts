@@ -16,5 +16,17 @@ export async function POST(request: Request, context: { params: { handle: String
 
   if (owner.id !== room.owner_id) return NextResponse.json({ error: "Only owner can start planning" }, { status: 500 });
 
+  const { data: votingSession } = await supabase
+    .from("voting_sessions")
+    .upsert({
+      room_id: room.id,
+    })
+    .select()
+    .limit(1)
+    .single();
+  if (!votingSession) return NextResponse.json({ error: "Fail to start a voting session" }, { status: 500 });
+
+  const { error } = await supabase.from("rooms").update({ active_voting_session_id: votingSession.id }).eq("id", room.id);
+
   return NextResponse.json({ success: true });
 }

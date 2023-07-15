@@ -10,10 +10,16 @@ export interface Room {
   handle: string;
   owner: User;
   members: User[];
+  active_voting_session_id: number;
 }
 
-export interface RoomUsers {
+export interface RoomUser {
   id: number;
   room_id: number;
   user_id: number;
+}
+
+export interface VotingSession {
+  id: number;
+  room_id: number;
 }
