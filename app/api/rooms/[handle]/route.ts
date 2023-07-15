@@ -11,11 +11,11 @@ export async function GET(request: Request, context: { params: { handle: String 
   const { data: owner } = await supabase.from("users").select().eq("id", room.owner_id).limit(1).single();
   if (!owner) return NextResponse.json({ error: "Fail to retrieve owner" }, { status: 500 });
 
-  const { data: members } = await supabase.from("room_users").select("users(*)").eq("room_id", room.id);
-  if (!members) return NextResponse.json({ error: "Fail to retrieve members" }, { status: 500 });
+  const { data: roomUsers } = await supabase.from("room_users").select("users(*)").eq("room_id", room.id);
+  if (!roomUsers) return NextResponse.json({ error: "Fail to retrieve members" }, { status: 500 });
 
   room.owner = owner;
-  room.members = members;
+  room.members = [...roomUsers.map((roomUser) => roomUser.users), owner];
 
   return NextResponse.json(room);
 }

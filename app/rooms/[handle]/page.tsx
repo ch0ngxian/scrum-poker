@@ -3,10 +3,12 @@
 import { Button } from "@/app/components/Button";
 import { Textfield } from "@/app/components/Textfield";
 import { useUserContext } from "@/app/user-provider";
+import supabase from "@/lib/supabase";
 import { Room, User } from "@/lib/types";
+import { RealtimePostgresInsertPayload } from "@supabase/supabase-js";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type RoomParams = {
   params: {
@@ -20,9 +22,11 @@ function MemberList({ members }: { members: User[] }) {
   }
 
   return (
-    <div>
-      {members.map((member) => (
-        <div key={`${member.id}`}>{member.name}</div>
+    <div className="flex">
+      {members.map((member, index) => (
+        <div className="rounded-full m-3 flex justify-center items-center h-20 w-20 bg-slate-500" key={`${index}`}>
+          {member.name}
+        </div>
       ))}
     </div>
   );
@@ -53,6 +57,13 @@ function MemberView({ room }: { room: Room }) {
 
     const response = await fetch(`/api/rooms/${room.handle}/join`, { method: "POST" });
   }
+
+  const isJoined = room.members.find((member) => member.token == user?.token) != null;
+
+  if (isJoined) {
+    return <div>Joined</div>;
+  }
+
   return (
     <div>
       <div>Join room</div>
@@ -77,10 +88,33 @@ export default function RoomView({ params }: RoomParams) {
       if (!room.id) return router.push("/");
 
       setRoom(room);
+      return room;
     };
 
     getRoom();
-  }, [params.handle, router]);
+
+    if (!room) return;
+
+    const channel = supabase
+      .channel(`${room.handle}`)
+      .on(
+        "postgres_changes",
+        {
+          schema: "public",
+          table: "room_users",
+          filter: `room_id=eq.${room.id}`,
+          event: "INSERT",
+        },
+        () => {
+          getRoom();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [params.handle, router, room]);
 
   if (!room) {
     return "Empty room";
@@ -89,8 +123,8 @@ export default function RoomView({ params }: RoomParams) {
   const isOwner = room.owner.token == Cookies.get("u");
 
   return (
-    <div>
-      <div>{<MemberList members={room.members}></MemberList>}</div>
+    <div className="flex flex-col items-center">
+      <div className="m-3">{<MemberList members={room.members}></MemberList>}</div>
       <div>{isOwner ? <OwnerView></OwnerView> : <MemberView room={room}></MemberView>}</div>
     </div>
   );
