@@ -10,6 +10,7 @@ export interface Room {
   handle: string;
   owner: User;
   members: User[];
+  allowed_points: number[];
   active_voting_session_id: number;
 }
 

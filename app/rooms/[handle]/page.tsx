@@ -171,8 +171,17 @@ export default function RoomView({ params }: RoomParams) {
   const isOwner = room.owner.token == Cookies.get("u");
 
   if (votingSession) {
-    return <div>Card</div>;
+    return (
+      <div className="flex justify-center">
+        {room.allowed_points.map((point, index) => (
+          <div className="m-3 rounded h-28 w-20 bg-slate-400 flex justify-center items-center" key={index}>
+            {point}
+          </div>
+        ))}
+      </div>
+    );
   }
+
   return (
     <div className="flex flex-col items-center">
       <div className="m-3">{<MemberList members={room.members}></MemberList>}</div>
