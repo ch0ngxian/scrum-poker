@@ -1,4 +1,4 @@
-import { Room, Vote } from "@/lib/types";
+import { Room, Vote, VotingSession } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 type ReactDivProps = React.ComponentProps<"div">;
@@ -20,12 +20,12 @@ function PointCard({ point, isSelected, ...props }: PointCardProps) {
     </div>
   );
 }
-export default function VotingSessionView({ room }: { room: Room }) {
+export default function VotingSessionView({ session, allowPoints }: { session: VotingSession; allowPoints: number[] }) {
   const [selectedPoint, setSelectedPoint] = useState<number | null>();
   const vote = async (point: number) => {
     setSelectedPoint(point);
 
-    await fetch(`/api/rooms/${room.handle}/sessions/${room.active_voting_session_id}/votes`, {
+    await fetch(`/api/rooms/${session.room_id}/sessions/${session.id}/votes`, {
       method: "POST",
       body: JSON.stringify({ point: point }),
     });
@@ -33,7 +33,7 @@ export default function VotingSessionView({ room }: { room: Room }) {
 
   useEffect(() => {
     const getSelectedPoint = async () => {
-      const response = await fetch(`/api/rooms/${room.handle}/sessions/${room.active_voting_session_id}/votes`);
+      const response = await fetch(`/api/rooms/${session.room_id}/sessions/${session.id}/votes`);
       const vote = (await response.json()) as Vote;
       if (!vote) return;
 
@@ -41,11 +41,11 @@ export default function VotingSessionView({ room }: { room: Room }) {
     };
 
     getSelectedPoint();
-  }, [room.handle, room.active_voting_session_id]);
+  }, [session]);
 
   return (
     <div className="flex justify-center flex-wrap m-5">
-      {room.allowed_points.map((point, index) => (
+      {allowPoints.map((point, index) => (
         <PointCard key={index} point={point} isSelected={point == selectedPoint} onClick={() => vote(point)}></PointCard>
       ))}
     </div>

@@ -9,45 +9,14 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import VotingSessionView from "./components/VotingSession";
+import MemberList from "./components/MemberList";
+import OwnerView from "./components/OwnerView";
 
 type RoomParams = {
   params: {
     handle: string;
   };
 };
-
-function MemberList({ members }: { members: User[] }) {
-  if (members.length <= 0) {
-    return "Empty members";
-  }
-
-  return (
-    <div className="flex">
-      {members.map((member, index) => (
-        <div className="rounded-full m-3 flex justify-center items-center h-20 w-20 bg-slate-500" key={`${index}`}>
-          {member.name}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function OwnerView({ room }: { room: Room }) {
-  const startRoom = async () => {
-    await fetch(`/api/rooms/${room.handle}/start`, {
-      method: "POST",
-    });
-  };
-
-  return (
-    <div>
-      <div>Share your room</div>
-      {`${window.location.href}`}
-
-      <Button onClick={startRoom}>Start</Button>
-    </div>
-  );
-}
 
 function MemberView({ room }: { room: Room }) {
   const [name, setName] = useState("");
@@ -172,7 +141,7 @@ export default function RoomView({ params }: RoomParams) {
   const isOwner = room.owner.token == Cookies.get("u");
 
   if (votingSession) {
-    return <VotingSessionView room={room}></VotingSessionView>;
+    return <VotingSessionView session={votingSession} allowPoints={room.allowed_points}></VotingSessionView>;
   }
 
   return (
