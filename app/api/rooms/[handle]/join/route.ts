@@ -17,15 +17,10 @@ export async function POST(request: Request, context: { params: { handle: String
   const { data: existingRoomUser } = await supabase.from("room_users").select().eq("room_id", room.id).eq("user_id", user.id).limit(1).single();
   if (existingRoomUser) return NextResponse.json({ error: "User already in the room" }, { status: 200 });
 
-  await supabase
-    .from("room_users")
-    .upsert({
-      room_id: room.id,
-      user_id: user.id,
-    })
-    .select()
-    .limit(1)
-    .single();
+  await supabase.from("room_users").insert({
+    room_id: room.id,
+    user_id: user.id,
+  });
 
   return NextResponse.json({ success: true });
 }

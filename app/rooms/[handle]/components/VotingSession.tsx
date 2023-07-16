@@ -1,24 +1,52 @@
-import { Room } from "@/lib/types";
-import { useState } from "react";
+import { Room, Vote } from "@/lib/types";
+import { useEffect, useState } from "react";
 
+type ReactDivProps = React.ComponentProps<"div">;
+
+type PointCardProps = ReactDivProps & {
+  point: number;
+  isSelected: boolean;
+};
+
+function PointCard({ point, isSelected, ...props }: PointCardProps) {
+  return (
+    <div
+      className={`m-3 rounded-lg h-56 w-40 font-semibold text-4xl bg-[#20282E] hover:bg-[#2e3942] ${
+        isSelected ? "border-[#2897FF] text-[#2897FF] border-4" : "border-[#3C454D] text-[#515e6a]"
+      } flex justify-center items-center  cursor-pointer `}
+      {...props}
+    >
+      {point}
+    </div>
+  );
+}
 export default function VotingSessionView({ room }: { room: Room }) {
   const [selectedPoint, setSelectedPoint] = useState<number | null>();
-  const vote = (point: number) => {
+  const vote = async (point: number) => {
     setSelectedPoint(point);
+
+    await fetch(`/api/rooms/${room.handle}/sessions/${room.active_voting_session_id}/votes`, {
+      method: "POST",
+      body: JSON.stringify({ point: point }),
+    });
   };
 
+  useEffect(() => {
+    const getSelectedPoint = async () => {
+      const response = await fetch(`/api/rooms/${room.handle}/sessions/${room.active_voting_session_id}/votes`);
+      const vote = (await response.json()) as Vote;
+      if (!vote) return;
+
+      setSelectedPoint(vote.point);
+    };
+
+    getSelectedPoint();
+  }, [room.handle, room.active_voting_session_id]);
+
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center flex-wrap m-5">
       {room.allowed_points.map((point, index) => (
-        <div
-          className={`m-3 rounded h-28 w-20 ${
-            selectedPoint == point ? "bg-slate-700" : "bg-slate-500"
-          } flex justify-center items-center hover:bg-slate-400 cursor-pointer `}
-          key={index}
-          onClick={() => vote(point)}
-        >
-          {point}
-        </div>
+        <PointCard key={index} point={point} isSelected={point == selectedPoint} onClick={() => vote(point)}></PointCard>
       ))}
     </div>
   );

@@ -24,3 +24,10 @@ export interface VotingSession {
   id: number;
   room_id: number;
 }
+
+export interface Vote {
+  id: number;
+  voting_session_id: number;
+  user_id: number;
+  point: number;
+}

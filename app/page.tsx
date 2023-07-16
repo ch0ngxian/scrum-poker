@@ -39,7 +39,7 @@ export default function Home() {
             <Button onClick={createRoom}>Create room</Button>
           </div>
         </div>
-        <div className="bg-slate-700 rounded-md w-full m-5"></div>
+        <div className="bg-[#333333] rounded-md w-full m-5"></div>
       </div>
     </main>
   );
