@@ -72,11 +72,7 @@ body {
 }
 
 .glow-rainbow:hover::after {
-  opacity: 1;
-}
-
-.glow-rainbow:active::after {
-  opacity: 1;
+  @apply opacity-70;
 }
 
 @keyframes spin {
