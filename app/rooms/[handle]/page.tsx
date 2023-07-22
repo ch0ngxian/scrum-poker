@@ -140,8 +140,32 @@ export default function RoomView({ params }: RoomParams) {
 
   const isOwner = room.owner.token == Cookies.get("u");
 
+  const revealResult = async (sessionId: number) => {
+    const response = await fetch(`/api/rooms/${room.handle}/sessions/${sessionId}/reveal`, {
+      method: "POST",
+    });
+  };
+
   if (votingSession) {
-    return <VotingSessionView session={votingSession} allowPoints={room.allowed_points}></VotingSessionView>;
+    return (
+      <div>
+        <VotingSessionView session={votingSession} allowPoints={room.allowed_points}></VotingSessionView>
+        {isOwner && (
+          <div className="flex justify-center">
+            <div className="w-1/2">
+              <Button
+                className="mt-10"
+                onClick={() => {
+                  revealResult(votingSession.id);
+                }}
+              >
+                Reveal
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (

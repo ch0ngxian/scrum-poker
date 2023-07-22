@@ -1,7 +1,5 @@
 import { User } from "@/lib/types";
 
-type ReactDivProps = React.ComponentProps<"div">;
-
 function MemberCell({ member }: { member: User }) {
   return <div className="rounded-full m-3 flex justify-center items-center h-20 w-20 bg-[#20282E] font-semibold flex-wrap">{member.name}</div>;
 }
