@@ -18,3 +18,87 @@ body {
   background: rgb(var(--background-rgb));
   color: rgb(var(--primary-rgb));
 }
+
+@property --rotate {
+  syntax: "<angle>";
+  initial-value: 132deg;
+  inherits: false;
+}
+
+.text-rainbow {
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+  background-color: #333333;
+  background-image: linear-gradient(var(--rotate, 132deg), #fb7b4a, #ff9c48, #fac83b, #64d39b, #5b97f2, #7a79fe, #c256d6);
+  background-size: contain;
+  animation: spin 8s linear infinite;
+}
+
+.border-rainbow {
+  position: relative;
+}
+.border-rainbow::before {
+  @apply rounded-lg p-1 opacity-50;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--rotate, 132deg), #fb7b4a, #ff9c48, #fac83b, #64d39b, #5b97f2, #7a79fe, #c256d6);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin 8s linear infinite;
+}
+
+.glow-rainbow {
+  @apply relative z-10;
+}
+
+.glow-rainbow::after {
+  @apply -z-10;
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  filter: blur(3rem);
+  /* background-image: linear-gradient(var(--rotate, 132deg), #ffadad, #ffd6a5, #fdffb6, #caffbf, #9bf6ff, #a0c4ff, #bdb2ff); */
+  background-image: linear-gradient(var(--rotate, 132deg), #fb7b4a, #ff9c48, #fac83b, #64d39b, #5b97f2, #7a79fe, #c256d6);
+  animation: spin 8s linear infinite, glow 5s linear infinite;
+  transition: opacity 1s ease-in-out;
+}
+
+.glow-rainbow:hover::after {
+  opacity: 1;
+}
+
+.glow-rainbow:active::after {
+  opacity: 1;
+}
+
+@keyframes spin {
+  0% {
+    --rotate: 0deg;
+  }
+
+  100% {
+    --rotate: 360deg;
+  }
+}
+
+@keyframes glow {
+  0% {
+    transform: scale(0.9);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(0.9);
+  }
+}

@@ -10,13 +10,15 @@ type PointCardProps = ReactDivProps & {
 
 function PointCard({ point, isSelected, ...props }: PointCardProps) {
   return (
-    <div
-      className={`m-3 rounded-lg h-56 w-40 font-semibold text-4xl bg-[#20282E] hover:bg-[#2e3942] ${
-        isSelected ? "border-[#2897FF] text-[#2897FF] border-4" : "border-[#3C454D] text-[#515e6a]"
-      } flex justify-center items-center  cursor-pointer `}
-      {...props}
-    >
-      {point}
+    <div className="glow-rainbow hover:scale-105 transition">
+      <div
+        className={`m-3 rounded-lg h-56 w-40 font-semibold text-4xl bg-[#20282E] ${
+          isSelected ? "border-rainbow" : "border-[#3C454D]"
+        } cursor-pointer `}
+        {...props}
+      >
+        <div className={`flex justify-center items-center h-full w-full ${isSelected ? "text-rainbow" : "text-[#515e6a]"}`}>{point}</div>
+      </div>
     </div>
   );
 }
