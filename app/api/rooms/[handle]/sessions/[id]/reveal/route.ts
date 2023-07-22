@@ -20,7 +20,7 @@ export async function POST(request: Request, context: { params: { handle: string
   const { data: votes } = await supabase.from("votes").select("user_id, point").eq("voting_session_id", votingSession.id);
 
   return NextResponse.json({
-    average_point: votes ? votes.map((vote) => vote.point).reduce((x, y) => x + y) : null,
+    average_point: votes ? votes.map((vote) => vote.point).reduce((x, y) => x + y) / votes.length : null,
     votes: votes,
   });
 }

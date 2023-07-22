@@ -152,7 +152,7 @@ export default function RoomView({ params }: RoomParams) {
         <VotingSessionView session={votingSession} allowPoints={room.allowed_points}></VotingSessionView>
         {isOwner && (
           <div className="flex justify-center">
-            <div className="w-1/2">
+            <div className="w-1/3">
               <Button
                 className="mt-10"
                 onClick={() => {
