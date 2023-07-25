@@ -40,19 +40,32 @@ function MemberView({ room }: { room: Room }) {
   }
 
   return (
-    <div>
-      <div>Join room</div>
-
-      <div className="my-10">
+    <div className="p-5 rounded-md bg-[#111111] border border-[#333333]">
+      <div className="text-center font-semibold">Join {`${room.owner.name}'s`} room</div>
+      <div className="flex justify-between my-3">
         <Textfield label="Name" value={name} onChange={(event) => setName(event.target.value)}></Textfield>
-        <Button onClick={joinRoom}>Join room</Button>
       </div>
+
+      <Button onClick={joinRoom}>Join room</Button>
+    </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="flex justify-center flex-wrap m-5">
+      {[...Array(6)].map((index) => (
+        <div key={index} className="m-3 rounded-lg h-56 w-40 font-semibold text-4xl bg-[#20282E] border-[#3C454D] skeleton-loading">
+          <div className={`flex justify-center items-center h-full w-full text-[#515e6a]}`}></div>
+        </div>
+      ))}
     </div>
   );
 }
 
 export default function RoomView({ params }: RoomParams) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [room, setRoom] = useState<Room | null>(null);
   const [votingSession, setVotingSession] = useState<VotingSession | null>(null);
 
@@ -64,6 +77,7 @@ export default function RoomView({ params }: RoomParams) {
       if (!room.id) return router.push("/");
 
       setRoom(room);
+      setIsLoading(false);
       return room;
     };
 
@@ -79,6 +93,7 @@ export default function RoomView({ params }: RoomParams) {
       if (!session) return;
 
       setVotingSession(session);
+      setIsLoading(false);
       return room;
     };
 
@@ -136,6 +151,7 @@ export default function RoomView({ params }: RoomParams) {
     };
   }, [params.handle, room]);
 
+  if (isLoading) return <LoadingSkeleton></LoadingSkeleton>;
   if (!room) return "Empty room";
 
   const isOwner = room.owner.token == Cookies.get("u");

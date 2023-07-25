@@ -98,3 +98,28 @@ body {
     transform: scale(0.9);
   }
 }
+
+.glassmorphism {
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+}
+
+.animated-filter {
+  background-image: linear-gradient(var(--rotate, 132deg), rgba(255, 255, 255, 0.5));
+}
+
+.skeleton-loading {
+  background-size: 600% 100%;
+  background-image: linear-gradient(110deg, #20282e 8%, #29323a 18%, #20282e 33%);
+  animation: skeleton-move 5s linear infinite;
+}
+
+@keyframes skeleton-move {
+  from {
+    background-position-x: 200%;
+  }
+
+  to {
+    background-position-x: -200%;
+  }
+}
