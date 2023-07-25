@@ -114,6 +114,10 @@ body {
   animation: skeleton-move 5s linear infinite;
 }
 
+.fade-in {
+  animation: fade-in 2s ease;
+}
+
 @keyframes skeleton-move {
   from {
     background-position-x: 200%;
@@ -121,5 +125,15 @@ body {
 
   to {
     background-position-x: -200%;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0%;
+  }
+
+  to {
+    opacity: 100%;
   }
 }

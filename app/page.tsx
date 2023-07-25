@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./components/Button";
 import { Textfield } from "./components/Textfield";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ import Spline from "@splinetool/react-spline";
 
 export default function Home() {
   const [name, setName] = useState("");
+  const [isIllustrationLoaded, setIsIllustrationLoaded] = useState(false);
   const router = useRouter();
   const [user, createUser] = useUserContext();
 
@@ -31,10 +32,13 @@ export default function Home() {
     setName(user?.name ?? "");
   }, [user]);
 
+  const onIllustrationLoaded = () => {
+    setIsIllustrationLoaded(true);
+  };
   return (
     <main className="h-screen w-screen">
       <div className="w-screen h-screen absolute">
-        <Image className="object-cover w-screen md:h-screen overflow-hidden" src={background} alt="" />
+        <Image className="object-cover w-screen md:h-screen overflow-hidden fade-in" src={background} alt="" />
       </div>
       <div className="flex w-full h-full glassmorphism">
         <div className="w-full flex flex-col justify-center items-center px-10 md:px-36">
@@ -47,8 +51,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="rounded-md w-full">
-          <Spline scene="https://draft.spline.design/hSccR-9otCVi1lvG/scene.splinecode" />
+        <div className={`rounded-md w-full bg-transparent opacity-0 ${isIllustrationLoaded ? "fade-in" : ""}`}>
+          <Spline onLoad={onIllustrationLoaded} scene="https://draft.spline.design/da7yHzCYeQv732d6/scene.splinecode" />
         </div>
       </div>
     </main>
