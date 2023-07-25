@@ -115,7 +115,7 @@ body {
 }
 
 .fade-in {
-  animation: fade-in 2s ease;
+  animation: fade-in 3s forwards;
 }
 
 @keyframes skeleton-move {
