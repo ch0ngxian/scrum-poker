@@ -239,7 +239,6 @@ export default function RoomView({ params }: RoomParams) {
                       <Image width={24} height={24} src={`https://api.dicebear.com/6.x/identicon/png?seed=${member.name}`} alt={member.name} />
                     </div>
                     {member.name}
-                    <div className="bg-green-400 rounded-full w-5 h-5 static right-0 bottom-0"></div>
                   </div>
                 );
               })}
