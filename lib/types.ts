@@ -23,6 +23,7 @@ export interface RoomUser {
 export interface VotingSession {
   id: number;
   room_id: number;
+  result: { point: number; count: number }[];
 }
 
 export interface Vote {

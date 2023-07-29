@@ -54,7 +54,7 @@ function MemberView({ room }: { room: Room }) {
 function LoadingSkeleton() {
   return (
     <div className="flex justify-center flex-wrap m-5">
-      {[...Array(6)].map((index) => (
+      {[...Array(6)].map((_, index) => (
         <div key={index} className="m-3 rounded-lg h-56 w-40 font-semibold text-4xl bg-[#20282E] border-[#3C454D] skeleton-loading">
           <div className={`flex justify-center items-center h-full w-full text-[#515e6a]}`}></div>
         </div>
@@ -151,6 +151,30 @@ export default function RoomView({ params }: RoomParams) {
     };
   }, [params.handle, room]);
 
+  useEffect(() => {
+    if (!votingSession?.id) return;
+
+    const votingResult = supabase
+      .channel(`voting-${votingSession.id}`)
+      .on(
+        "postgres_changes",
+        {
+          schema: "public",
+          table: "voting_sessions",
+          filter: `id=eq.${votingSession.id}`,
+          event: "UPDATE",
+        },
+        async (payload) => {
+          setVotingSession(payload.new as VotingSession);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(votingResult);
+    };
+  }, [votingSession?.id]);
+
   if (isLoading) return <LoadingSkeleton></LoadingSkeleton>;
   if (!room) return "Empty room";
 
@@ -163,6 +187,10 @@ export default function RoomView({ params }: RoomParams) {
   };
 
   if (votingSession) {
+    if (votingSession.result) {
+      return <div>{JSON.stringify(votingSession.result)}</div>;
+    }
+
     return (
       <div>
         <VotingSessionView session={votingSession} allowPoints={room.allowed_points}></VotingSessionView>
