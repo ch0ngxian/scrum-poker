@@ -66,21 +66,6 @@ function LoadingSkeleton() {
   );
 }
 
-export const data = [
-  ["Task", "Hours per Day"],
-  ["Work", 11],
-  ["Eat", 2],
-  ["Commute", 2],
-  ["Watch TV", 2],
-  ["Sleep", 7],
-];
-
-export const options = {
-  title: "My Daily Activities",
-  is3D: true,
-  backgroundColor: "transparent",
-};
-
 function MemberSummary({ members }: { members: User[] }) {
   return (
     <div className="flex justify-center">
@@ -235,11 +220,7 @@ export default function RoomView({ params }: RoomParams) {
 
   if (votingSession) {
     if (votingSession.result) {
-      return (
-        <div>
-          <Chart chartType="PieChart" data={data} options={options} width={"100%"} height={"400px"} />
-        </div>
-      );
+      return <div>Chart</div>;
     }
 
     return (
@@ -258,6 +239,7 @@ export default function RoomView({ params }: RoomParams) {
                       <Image width={24} height={24} src={`https://api.dicebear.com/6.x/identicon/png?seed=${member.name}`} alt={member.name} />
                     </div>
                     {member.name}
+                    <div className="bg-green-400 rounded-full w-5 h-5 static right-0 bottom-0"></div>
                   </div>
                 );
               })}
