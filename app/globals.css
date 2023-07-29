@@ -118,6 +118,10 @@ body {
   animation: fade-in 3s forwards;
 }
 
+button.secondary {
+  @apply bg-transparent border border-[#333333] text-white;
+}
+
 @keyframes skeleton-move {
   from {
     background-position-x: 200%;

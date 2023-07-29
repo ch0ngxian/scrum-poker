@@ -1,4 +1,4 @@
-import { Room, Vote, VotingSession } from "@/lib/types";
+import { Vote, VotingSession } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 type ReactDivProps = React.ComponentProps<"div">;
@@ -12,7 +12,7 @@ function PointCard({ point, isSelected, ...props }: PointCardProps) {
   return (
     <div className="glow-rainbow hover:scale-105 transition">
       <div
-        className={`m-3 rounded-lg h-56 w-40 font-semibold text-4xl bg-[#20282E] ${
+        className={`m-3 rounded-lg h-44 w-32 sm:h-56 sm:w-40 font-semibold text-4xl bg-[#20282E] ${
           isSelected ? "border-rainbow" : "border-[#3C454D]"
         } cursor-pointer `}
         {...props}
@@ -22,7 +22,8 @@ function PointCard({ point, isSelected, ...props }: PointCardProps) {
     </div>
   );
 }
-export default function VotingSessionView({ session, allowPoints }: { session: VotingSession; allowPoints: number[] }) {
+
+export default function VotingCards({ session, allowPoints }: { session: VotingSession; allowPoints: number[] }) {
   const [selectedPoint, setSelectedPoint] = useState<number | null>();
   const vote = async (point: number) => {
     setSelectedPoint(point);

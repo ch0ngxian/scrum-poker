@@ -8,9 +8,12 @@ import { Room, User, VotingSession } from "@/lib/types";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import VotingSessionView from "./components/VotingSession";
+import VotingCards from "./components/VotingCards";
 import MemberList from "./components/MemberList";
 import OwnerView from "./components/OwnerView";
+import { Chart } from "react-google-charts";
+import ChevronDown from "@/app/images/ChevronDown";
+import Image from "next/image";
 
 type RoomParams = {
   params: {
@@ -59,6 +62,50 @@ function LoadingSkeleton() {
           <div className={`flex justify-center items-center h-full w-full text-[#515e6a]}`}></div>
         </div>
       ))}
+    </div>
+  );
+}
+
+export const data = [
+  ["Task", "Hours per Day"],
+  ["Work", 11],
+  ["Eat", 2],
+  ["Commute", 2],
+  ["Watch TV", 2],
+  ["Sleep", 7],
+];
+
+export const options = {
+  title: "My Daily Activities",
+  is3D: true,
+  backgroundColor: "transparent",
+};
+
+function MemberSummary({ members }: { members: User[] }) {
+  return (
+    <div className="flex justify-center">
+      <div className="flex flex-col items-center rounded-b-lg px-5 py-2 bg-[#111111] border border-t-0 border-[#333333]">
+        <div className="flex items-center">
+          {members.map((member, index) => {
+            return (
+              <div key={index} className="flex flex-col justify-center items-center text-xs text-gray-500">
+                <div className="rounded-full mx-3 mb-1 flex justify-center items-center h-10 w-10 flex-wrap relative overflow-hidden bg-[#EEEEFF] border border-[#333333]">
+                  <Image width={24} height={24} src={`https://api.dicebear.com/6.x/identicon/png?seed=${member.name}`} alt={member.name} />
+                </div>
+                {member.name}
+              </div>
+            );
+          })}
+        </div>
+        <ChevronDown className="ml-2"></ChevronDown>
+      </div>
+    </div>
+  );
+  return (
+    <div className="flex justify-center">
+      <div className="flex items-center rounded-b-lg pl-5 pr-3 py-2 bg-[#111111] border border-t-0 border-[#333333] text-xs text-gray-500 cursor-pointer hover:text-gray-300">
+        1/12 chosen <ChevronDown className="ml-2"></ChevronDown>
+      </div>
     </div>
   );
 }
@@ -188,26 +235,45 @@ export default function RoomView({ params }: RoomParams) {
 
   if (votingSession) {
     if (votingSession.result) {
-      return <div>{JSON.stringify(votingSession.result)}</div>;
+      return (
+        <div>
+          <Chart chartType="PieChart" data={data} options={options} width={"100%"} height={"400px"} />
+        </div>
+      );
     }
 
     return (
       <div>
-        <VotingSessionView session={votingSession} allowPoints={room.allowed_points}></VotingSessionView>
-        {isOwner && (
-          <div className="flex justify-center">
-            <div className="w-1/3">
+        <VotingCards session={votingSession} allowPoints={room.allowed_points}></VotingCards>
+        <div className="flex justify-center">
+          <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
+            <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
+              {room.members.map((member, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="flex flex-col justify-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
+                  >
+                    <div className="rounded-full mx-3 mb-1 flex justify-center items-center h-10 w-10 flex-wrap relative overflow-hidden bg-[#EEEEFF] border border-[#333333]">
+                      <Image width={24} height={24} src={`https://api.dicebear.com/6.x/identicon/png?seed=${member.name}`} alt={member.name} />
+                    </div>
+                    {member.name}
+                  </div>
+                );
+              })}
+            </div>
+            {isOwner && (
               <Button
-                className="mt-10"
+                className="mt-5"
                 onClick={() => {
                   revealResult(votingSession.id);
                 }}
               >
                 Reveal
               </Button>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     );
   }
@@ -215,7 +281,7 @@ export default function RoomView({ params }: RoomParams) {
   return (
     <div className="flex flex-col items-center">
       <div className="m-3">{<MemberList members={room.members}></MemberList>}</div>
-      <div>{isOwner ? <OwnerView room={room}></OwnerView> : <MemberView room={room}></MemberView>}</div>
+      {isOwner ? <OwnerView room={room}></OwnerView> : <MemberView room={room}></MemberView>}
     </div>
   );
 }

@@ -42,7 +42,7 @@ export default function Home() {
       </div>
       <div className="flex w-full h-full glassmorphism">
         <div className="w-full flex flex-col justify-center items-center px-10 md:px-36">
-          <div className="glassmorphism bg-black bg-opacity-20 w-full px-10 py-32 rounded-xl border border-white border-opacity-30 shadow">
+          <div className="glassmorphism bg-[#111111] bg-opacity-20 w-full px-10 py-32 rounded-xl border border-white border-opacity-30 shadow">
             <h1 className="font-bold text-6xl">Scrum Poker</h1>
 
             <div className="my-10">
