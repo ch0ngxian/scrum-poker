@@ -5,10 +5,15 @@ import { Button } from "./components/Button";
 import { Textfield } from "./components/Textfield";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "./user-provider";
-import { Room } from "@/lib/types";
+import { Room, User } from "@/lib/types";
 import Image from "next/image";
 import background from "./images/background.svg";
 import Spline from "@splinetool/react-spline";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+import app from "@/lib/firebase";
+import Cookies from "js-cookie";
+
+const firestore = getFirestore(app);
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -19,13 +24,13 @@ export default function Home() {
   const createRoom = async () => {
     if (!user) await createUser({ name: name });
 
-    const response = await fetch("/api/rooms", {
+    const response = await fetch("/api/firebase/rooms", {
       method: "POST",
     });
     const room = (await response.json()) as Room;
     if (!room) return;
 
-    router.push(`/rooms/${room.handle}`);
+    router.push(`/rooms/${room.id}`);
   };
 
   useEffect(() => {

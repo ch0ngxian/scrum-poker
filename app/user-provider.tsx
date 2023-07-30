@@ -19,10 +19,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const getUser = async () => {
-    const token = Cookies.get("u");
-    if (!token) return;
+    const id = Cookies.get("u");
+    if (!id) return;
 
-    const response = await fetch(`/api/users`);
+    const response = await fetch("/api/firebase/users");
     const user = (await response.json()) as User;
 
     if (!user) {
@@ -31,21 +31,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
 
     setUser(user as User);
-    Cookies.set("u", `${user.token}`, { expires: 7 });
+    Cookies.set("u", `${user.id}`, { expires: 7 });
 
     return user;
   };
 
   const createUser = async ({ name }: { name: string }) => {
-    const response = await fetch("/api/users", {
+    const response = await fetch("/api/firebase/users", {
       method: "POST",
       body: JSON.stringify({ name: name }),
     });
 
-    const user = (await response.json()) as User;
+    const { id }: { id: string } = await response.json();
 
-    setUser(user);
-    Cookies.set("u", `${user.token}`, { expires: 7 });
+    setUser({ id: id, name: name });
+    Cookies.set("u", id, { expires: 7 });
 
     return user;
   };

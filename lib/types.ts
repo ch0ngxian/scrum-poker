@@ -1,17 +1,14 @@
 export interface User {
-  id: number;
+  id: string;
   name: string;
-  token: string;
 }
 
 export interface Room {
-  id: number;
-  owner_id: number;
-  handle: string;
+  id: string;
   owner: User;
   members: User[];
   allowed_points: number[];
-  active_voting_session_id: number;
+  active_voting_session: VotingSession;
 }
 
 export interface RoomUser {

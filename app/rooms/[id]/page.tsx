@@ -17,7 +17,7 @@ import Image from "next/image";
 
 type RoomParams = {
   params: {
-    handle: string;
+    id: string;
   };
 };
 
@@ -33,10 +33,10 @@ function MemberView({ room }: { room: Room }) {
     if (!name) return;
     if (!user) await createUser({ name: name });
 
-    await fetch(`/api/rooms/${room.handle}/join`, { method: "POST" });
+    await fetch(`/api/firebase/rooms/${room.id}/join`, { method: "POST" });
   }
 
-  const isJoined = room.members.find((member) => member.token == user?.token) != null;
+  const isJoined = room.members.find((member) => member.id == user?.id) != null;
 
   if (isJoined) {
     return <div>Waiting to start</div>;
@@ -66,35 +66,6 @@ function LoadingSkeleton() {
   );
 }
 
-function MemberSummary({ members }: { members: User[] }) {
-  return (
-    <div className="flex justify-center">
-      <div className="flex flex-col items-center rounded-b-lg px-5 py-2 bg-[#111111] border border-t-0 border-[#333333]">
-        <div className="flex items-center">
-          {members.map((member, index) => {
-            return (
-              <div key={index} className="flex flex-col justify-center items-center text-xs text-gray-500">
-                <div className="rounded-full mx-3 mb-1 flex justify-center items-center h-10 w-10 flex-wrap relative overflow-hidden bg-[#EEEEFF] border border-[#333333]">
-                  <Image width={24} height={24} src={`https://api.dicebear.com/6.x/identicon/png?seed=${member.name}`} alt={member.name} />
-                </div>
-                {member.name}
-              </div>
-            );
-          })}
-        </div>
-        <ChevronDown className="ml-2"></ChevronDown>
-      </div>
-    </div>
-  );
-  return (
-    <div className="flex justify-center">
-      <div className="flex items-center rounded-b-lg pl-5 pr-3 py-2 bg-[#111111] border border-t-0 border-[#333333] text-xs text-gray-500 cursor-pointer hover:text-gray-300">
-        1/12 chosen <ChevronDown className="ml-2"></ChevronDown>
-      </div>
-    </div>
-  );
-}
-
 export default function RoomView({ params }: RoomParams) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -103,7 +74,7 @@ export default function RoomView({ params }: RoomParams) {
 
   useEffect(() => {
     const getRoom = async () => {
-      const response = await fetch(`/api/rooms/${params.handle}`);
+      const response = await fetch(`/api/firebase/rooms/${params.id}`);
 
       const room = (await response.json()) as Room;
       if (!room.id) return router.push("/");
@@ -114,106 +85,15 @@ export default function RoomView({ params }: RoomParams) {
     };
 
     getRoom();
-  }, [params.handle, router]);
-
-  useEffect(() => {
-    const getVotingSession = async () => {
-      if (!room || !room.active_voting_session_id) return;
-      const response = await fetch(`/api/rooms/${room.handle}/sessions/${room.active_voting_session_id}`);
-
-      const session = (await response.json()) as VotingSession;
-      if (!session) return;
-
-      setVotingSession(session);
-      setIsLoading(false);
-      return room;
-    };
-
-    getVotingSession();
-  }, [room]);
-
-  useEffect(() => {
-    if (!room) return;
-
-    const roomMembersChannel = supabase
-      .channel(`room-${room.handle}-members`)
-      .on(
-        "postgres_changes",
-        {
-          schema: "public",
-          table: "room_users",
-          filter: `room_id=eq.${room.id}`,
-          event: "INSERT",
-        },
-        async () => {
-          const response = await fetch(`/api/rooms/${params.handle}`);
-
-          const room = (await response.json()) as Room;
-          if (!room.id) return;
-
-          setRoom(room);
-        }
-      )
-      .subscribe();
-
-    const roomChannel = supabase
-      .channel(`room-${room.handle}`)
-      .on(
-        "postgres_changes",
-        {
-          schema: "public",
-          table: "rooms",
-          filter: `id=eq.${room.id}`,
-          event: "UPDATE",
-        },
-        async (payload) => {
-          const newRoom = payload.new;
-
-          const response = await fetch(`/api/rooms/${params.handle}/sessions/${newRoom.active_voting_session_id}`);
-          const session = (await response.json()) as VotingSession;
-
-          setVotingSession(session);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(roomMembersChannel);
-      supabase.removeChannel(roomChannel);
-    };
-  }, [params.handle, room]);
-
-  useEffect(() => {
-    if (!votingSession?.id) return;
-
-    const votingResult = supabase
-      .channel(`voting-${votingSession.id}`)
-      .on(
-        "postgres_changes",
-        {
-          schema: "public",
-          table: "voting_sessions",
-          filter: `id=eq.${votingSession.id}`,
-          event: "UPDATE",
-        },
-        async (payload) => {
-          setVotingSession(payload.new as VotingSession);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(votingResult);
-    };
-  }, [votingSession?.id]);
+  }, [params.id, router]);
 
   if (isLoading) return <LoadingSkeleton></LoadingSkeleton>;
   if (!room) return "Empty room";
 
-  const isOwner = room.owner.token == Cookies.get("u");
+  const isOwner = room.owner.id == Cookies.get("u");
 
   const revealResult = async (sessionId: number) => {
-    const response = await fetch(`/api/rooms/${room.handle}/sessions/${sessionId}/reveal`, {
+    const response = await fetch(`/api/firebase/rooms/${room.id}/sessions/${sessionId}/reveal`, {
       method: "POST",
     });
   };
