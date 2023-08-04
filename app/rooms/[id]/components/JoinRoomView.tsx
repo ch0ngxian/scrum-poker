@@ -4,7 +4,7 @@ import { useUserContext } from "@/app/user-provider";
 import { Room } from "@/lib/types";
 import { useEffect, useState } from "react";
 
-export default function MemberView({ room }: { room: Room }) {
+export default function JoinRoomView({ room }: { room: Room }) {
   const [name, setName] = useState("");
   const [user, createUser] = useUserContext();
 

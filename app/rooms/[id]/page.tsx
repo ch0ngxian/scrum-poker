@@ -7,9 +7,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import VotingCards from "./components/VotingCards";
 import MemberList from "./components/MemberList";
-import OwnerView from "./components/OwnerView";
+import StartRoomView from "./components/StartRoomView";
 import Image from "next/image";
-import MemberView from "./components/MemberView";
+import JoinRoomView from "./components/JoinRoomView";
 
 type RoomParams = {
   params: {
@@ -105,7 +105,7 @@ export default function RoomView({ params }: RoomParams) {
   return (
     <div className="flex flex-col items-center">
       <div className="m-3">{<MemberList members={room.members}></MemberList>}</div>
-      {isOwner ? <OwnerView room={room}></OwnerView> : <MemberView room={room}></MemberView>}
+      {isOwner ? <StartRoomView room={room}></StartRoomView> : <JoinRoomView room={room}></JoinRoomView>}
     </div>
   );
 }

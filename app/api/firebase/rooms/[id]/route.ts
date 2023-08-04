@@ -16,7 +16,9 @@ export async function GET(request: Request, context: { params: { id: string } })
   return NextResponse.json({
     ...room.data(),
     id: room.id,
-    members: memberDocs.map((memberDoc: DocumentSnapshot) => memberDoc.data()),
+    members: memberDocs.map((memberDoc: DocumentSnapshot) => {
+      return { id: memberDoc.id, ...(memberDoc.data() as { name: string }) };
+    }),
     owner: {
       id: ownerDoc.id,
       ...(ownerDoc.data() as { name: string }),

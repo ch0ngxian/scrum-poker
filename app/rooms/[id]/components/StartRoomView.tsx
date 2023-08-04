@@ -2,7 +2,7 @@ import { Button } from "@/app/components/Button";
 import { Room } from "@/lib/types";
 import { useState } from "react";
 
-export default function OwnerView({ room }: { room: Room }) {
+export default function StartRoomView({ room }: { room: Room }) {
   const [isCopied, setIsCopied] = useState(false);
   const startRoom = async () => {
     await fetch(`/api/firebase/rooms/${room.id}/start`, {
