@@ -26,14 +26,14 @@ export default function OwnerView({ room }: { room: Room }) {
         <div className="flex justify-between my-3">
           <div className="rounded bg-black p-3 text-sm text-[#888888] w-full break-words">{`${window.location.href}`}</div>
           <button
-            className="hidden sm:flex ml-5 px-3 py-1 border border-[#333333] rounded-md justify-center items-center cursor-pointer"
+            className="hidden lg:flex ml-5 px-3 py-1 border border-[#333333] rounded-md justify-center items-center cursor-pointer"
             onClick={() => copyLink(window.location.href)}
           >
             {isCopied ? "Copied" : "Copy"}
           </button>
         </div>
 
-        <Button className="mt-5 secondary sm:hidden" onClick={() => copyLink(window.location.href)}>
+        <Button className="mt-5 secondary lg:hidden" onClick={() => copyLink(window.location.href)}>
           {isCopied ? "Copied" : "Copy"}
         </Button>
 
