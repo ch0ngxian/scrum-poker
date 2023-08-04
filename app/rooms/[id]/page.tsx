@@ -12,6 +12,7 @@ import Image from "next/image";
 import JoinRoomView from "./components/JoinRoomView";
 import { collection, query, where, onSnapshot, getFirestore, doc } from "firebase/firestore";
 import app from "@/lib/firebase";
+import { useUserContext } from "@/app/user-provider";
 
 const firestore = getFirestore(app);
 
@@ -38,6 +39,7 @@ export default function RoomView({ params }: RoomParams) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [room, setRoom] = useState<Room | null>(null);
   const [votingSession, setVotingSession] = useState<VotingSession | null>(null);
+  const [user, createUser] = useUserContext();
 
   useEffect(() => {
     const getRoom = async () => {
@@ -97,7 +99,9 @@ export default function RoomView({ params }: RoomParams) {
     });
   };
 
-  if (votingSession) {
+  const isJoined = user ? room.members.find((member) => member.id == user.id) != null : false;
+
+  if (user && isJoined && votingSession) {
     if (votingSession.result) {
       return <div>Chart</div>;
     }
@@ -141,7 +145,7 @@ export default function RoomView({ params }: RoomParams) {
   return (
     <div className="flex flex-col items-center">
       <div className="m-3">{<MemberList members={room.members}></MemberList>}</div>
-      {isOwner ? <StartRoomView room={room}></StartRoomView> : <JoinRoomView room={room}></JoinRoomView>}
+      {isOwner ? <StartRoomView room={room}></StartRoomView> : <JoinRoomView room={room} isJoined={isJoined}></JoinRoomView>}
     </div>
   );
 }

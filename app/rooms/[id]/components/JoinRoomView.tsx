@@ -4,7 +4,7 @@ import { useUserContext } from "@/app/user-provider";
 import { Room } from "@/lib/types";
 import { useEffect, useState } from "react";
 
-export default function JoinRoomView({ room }: { room: Room }) {
+export default function JoinRoomView({ room, isJoined }: { room: Room; isJoined: boolean }) {
   const [name, setName] = useState("");
   const [user, createUser] = useUserContext();
 
@@ -18,8 +18,6 @@ export default function JoinRoomView({ room }: { room: Room }) {
 
     await fetch(`/api/rooms/${room.id}/join`, { method: "POST" });
   }
-
-  const isJoined = user ? room.members.find((member) => member.id == user.id) != null : false;
 
   if (isJoined) {
     return <div>Waiting to start</div>;
