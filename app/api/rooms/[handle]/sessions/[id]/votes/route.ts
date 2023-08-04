@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-export async function POST(request: Request, context: { params: { id: String } }) {
+export async function POST(request: Request, context: { params: { id: string } }) {
   const supabase = createRouteHandlerClient({ cookies });
 
   const { point } = await request.json();
@@ -32,7 +32,7 @@ export async function POST(request: Request, context: { params: { id: String } }
   return NextResponse.json({ success: true });
 }
 
-export async function GET(request: Request, context: { params: { id: String } }) {
+export async function GET(request: Request, context: { params: { id: string } }) {
   const supabase = createRouteHandlerClient({ cookies });
 
   const token = cookies().get("u")?.value;

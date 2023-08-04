@@ -37,10 +37,10 @@ export default function VotingView({ session, allowPoints }: { session: VotingSe
   useEffect(() => {
     const getSelectedPoint = async () => {
       const response = await fetch(`/api/firebase/rooms/${session.room.id}/sessions/active/votes`);
-      const vote = (await response.json()) as Vote;
+      const vote = await response.json();
       if (!vote) return;
 
-      setSelectedPoint(vote.point);
+      setSelectedPoint(vote);
     };
 
     getSelectedPoint();

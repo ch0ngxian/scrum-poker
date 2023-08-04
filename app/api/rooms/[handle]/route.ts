@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-export async function GET(request: Request, context: { params: { handle: String } }) {
+export async function GET(request: Request, context: { params: { handle: string } }) {
   const supabase = createRouteHandlerClient({ cookies });
 
   const { data: room } = await supabase.from("rooms").select().eq("handle", context.params.handle).limit(1).single();

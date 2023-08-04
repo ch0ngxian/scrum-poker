@@ -5,7 +5,7 @@ import app from "@/lib/firebase";
 
 const firestore = getFirestore(app);
 
-export async function POST(request: Request, context: { params: { id: String } }) {
+export async function POST(request: Request, context: { params: { id: string } }) {
   const id = cookies().get("u")?.value;
   if (!id) return NextResponse.json({ error: "User ID is required" }, { status: 500 });
 
