@@ -14,10 +14,6 @@ export async function POST(request: Request, context: { params: { id: string } }
   const user = await getDoc(userDocRef);
   if (!user.exists()) return NextResponse.json({ error: "Invalid user ID" }, { status: 422 });
 
-  const roomDocRef = doc(firestore, `rooms/${context.params.id}`);
-  const room = await getDoc(roomDocRef);
-  if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 404 });
-
   const sessionDocRef = doc(firestore, `voting_sessions/${context.params.id}`);
   await updateDoc(sessionDocRef, {
     ["votes." + userDocRef.id]: point,
