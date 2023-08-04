@@ -5,7 +5,7 @@ import { useState } from "react";
 export default function StartRoomView({ room }: { room: Room }) {
   const [isCopied, setIsCopied] = useState(false);
   const startRoom = async () => {
-    await fetch(`/api/firebase/rooms/${room.id}/start`, {
+    await fetch(`/api/rooms/${room.id}/start`, {
       method: "POST",
     });
   };

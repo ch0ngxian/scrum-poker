@@ -1,31 +1,25 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { getFirestore, getDoc, doc, addDoc, collection } from "firebase/firestore";
+import app from "@/lib/firebase";
 import { cookies } from "next/headers";
 
+const firestore = getFirestore(app);
+
 export async function GET(request: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
+  const id = cookies().get("u")?.value;
 
-  const token = cookies().get("u")?.value;
-  if (!token) return NextResponse.json({ error: "User token is require" }, { status: 500 });
+  const snapshot = await getDoc(doc(firestore, `users/${id}`));
+  if (!snapshot.exists()) return NextResponse.json({ error: "Invalid user ID" }, { status: 422 });
 
-  const { data: user, error } = await supabase.from("users").select("name, token").eq("token", token).limit(1).single();
-  if (!user) return NextResponse.json({ error: error }, { status: 500 });
-
-  return NextResponse.json(user);
+  return NextResponse.json({ id: snapshot.id, ...snapshot.data() });
 }
 
 export async function POST(request: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
-
   const { name } = await request.json();
-  const { data, error } = await supabase
-    .from("users")
-    .insert({
-      name: name,
-    })
-    .select();
 
-  if (!data) return NextResponse.json({ error: "Fail to create user" }, { status: 500 });
+  const docRef = await addDoc(collection(firestore, "users"), {
+    name: name,
+  });
 
-  return NextResponse.json(data[0]);
+  return NextResponse.json({ id: docRef.id });
 }

@@ -41,7 +41,7 @@ export default function RoomView({ params }: RoomParams) {
 
   useEffect(() => {
     const getRoom = async () => {
-      const response = await fetch(`/api/firebase/rooms/${params.id}`);
+      const response = await fetch(`/api/rooms/${params.id}`);
 
       const room = (await response.json()) as Room;
       if (!room.id) return router.push("/");
@@ -92,7 +92,7 @@ export default function RoomView({ params }: RoomParams) {
   const isOwner = room.owner.id == Cookies.get("u");
 
   const revealResult = async (sessionId: string) => {
-    await fetch(`/api/firebase/sessions/${sessionId}/reveal`, {
+    await fetch(`/api/sessions/${sessionId}/reveal`, {
       method: "POST",
     });
   };

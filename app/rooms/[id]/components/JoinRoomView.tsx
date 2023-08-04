@@ -16,7 +16,7 @@ export default function JoinRoomView({ room }: { room: Room }) {
     if (!name) return;
     if (!user) await createUser({ name: name });
 
-    await fetch(`/api/firebase/rooms/${room.id}/join`, { method: "POST" });
+    await fetch(`/api/rooms/${room.id}/join`, { method: "POST" });
   }
 
   const isJoined = user ? room.members.find((member) => member.id == user.id) != null : false;

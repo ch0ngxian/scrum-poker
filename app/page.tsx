@@ -24,7 +24,7 @@ export default function Home() {
   const createRoom = async () => {
     if (!user) await createUser({ name: name });
 
-    const response = await fetch("/api/firebase/rooms", {
+    const response = await fetch("/api/rooms", {
       method: "POST",
     });
     const room = (await response.json()) as Room;

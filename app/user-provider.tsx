@@ -22,7 +22,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const id = Cookies.get("u");
     if (!id) return;
 
-    const response = await fetch("/api/firebase/users");
+    const response = await fetch("/api/users");
     const user = (await response.json()) as User;
 
     if (!user) {
@@ -37,7 +37,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const createUser = async ({ name }: { name: string }) => {
-    const response = await fetch("/api/firebase/users", {
+    const response = await fetch("/api/users", {
       method: "POST",
       body: JSON.stringify({ name: name }),
     });
