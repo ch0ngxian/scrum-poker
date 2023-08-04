@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { arrayUnion, doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import app from "@/lib/firebase";
 
 const firestore = getFirestore(app);

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/Button";
-import { Room, VotingSession } from "@/lib/types";
+import { Room, User, VotingSession } from "@/lib/types";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -10,9 +10,8 @@ import MemberList from "./components/MemberList";
 import StartRoomView from "./components/StartRoomView";
 import Image from "next/image";
 import JoinRoomView from "./components/JoinRoomView";
-import { collection, query, where, onSnapshot, getFirestore, doc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, getFirestore, doc, DocumentReference, getDoc } from "firebase/firestore";
 import app from "@/lib/firebase";
-import { Ubuntu } from "next/font/google";
 
 const firestore = getFirestore(app);
 
@@ -66,11 +65,21 @@ export default function RoomView({ params }: RoomParams) {
       return unsubscribe;
     };
 
+    const listenMemberJoin = () => {
+      const roomRef = doc(firestore, "rooms", params.id);
+      const unsubscribe = onSnapshot(roomRef, async (newDoc) => {
+        getRoom();
+      });
+      return unsubscribe;
+    };
+
     getRoom();
-    const unsubscribe = listenVotingSessionStart();
+    const unsubscribeListenVotingSessionStart = listenVotingSessionStart();
+    const unsubscribeListenMemberJoin = listenMemberJoin();
 
     return () => {
-      unsubscribe();
+      unsubscribeListenVotingSessionStart();
+      unsubscribeListenMemberJoin();
     };
   }, [params.id, router]);
 
