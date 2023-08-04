@@ -1,4 +1,4 @@
-import { Vote, VotingSession } from "@/lib/types";
+import { VotingSession } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 type ReactDivProps = React.ComponentProps<"div">;

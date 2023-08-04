@@ -51,13 +51,16 @@ export default function RoomView({ params }: RoomParams) {
       return room;
     };
 
-    const listenVotingSessionStart = () => {
+    const listenVotingSession = () => {
       const roomRef = doc(firestore, "rooms", params.id);
 
       const q = query(collection(firestore, "voting_sessions"), where("room", "==", roomRef));
       const unsubscribe = onSnapshot(q, (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === "added") {
+            setVotingSession({ id: change.doc.id, ...change.doc.data() } as VotingSession);
+          }
+          if (change.type === "modified") {
             setVotingSession({ id: change.doc.id, ...change.doc.data() } as VotingSession);
           }
         });
@@ -74,11 +77,11 @@ export default function RoomView({ params }: RoomParams) {
     };
 
     getRoom();
-    const unsubscribeListenVotingSessionStart = listenVotingSessionStart();
+    const unsubscribeListenVotingSession = listenVotingSession();
     const unsubscribeListenMemberJoin = listenMemberJoin();
 
     return () => {
-      unsubscribeListenVotingSessionStart();
+      unsubscribeListenVotingSession();
       unsubscribeListenMemberJoin();
     };
   }, [params.id, router]);

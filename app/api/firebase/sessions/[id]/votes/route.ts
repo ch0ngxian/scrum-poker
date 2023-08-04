@@ -5,7 +5,7 @@ import app from "@/lib/firebase";
 
 const firestore = getFirestore(app);
 
-export async function POST(request: Request, context: { params: { id: string; session_id: string } }) {
+export async function POST(request: Request, context: { params: { id: string } }) {
   const { point } = await request.json();
   const id = cookies().get("u")?.value;
   if (!id) return NextResponse.json({ error: "User ID is required" }, { status: 422 });
@@ -18,7 +18,7 @@ export async function POST(request: Request, context: { params: { id: string; se
   const room = await getDoc(roomDocRef);
   if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
-  const sessionDocRef = doc(firestore, `voting_sessions/${context.params.session_id}`);
+  const sessionDocRef = doc(firestore, `voting_sessions/${context.params.id}`);
   await updateDoc(sessionDocRef, {
     ["votes." + userDocRef.id]: point,
   });
@@ -26,11 +26,11 @@ export async function POST(request: Request, context: { params: { id: string; se
   return NextResponse.json({ success: true });
 }
 
-export async function GET(request: Request, context: { params: { id: string; session_id: string } }) {
+export async function GET(request: Request, context: { params: { id: string } }) {
   const id = cookies().get("u")?.value;
   if (!id) return NextResponse.json({ error: "User ID is required" }, { status: 422 });
 
-  const sessionDocRef = doc(firestore, `voting_sessions/${context.params.session_id}`);
+  const sessionDocRef = doc(firestore, `voting_sessions/${context.params.id}`);
   const session = await getDoc(sessionDocRef);
   if (!session.exists()) return NextResponse.json({ error: "Session not found" }, { status: 404 });
 

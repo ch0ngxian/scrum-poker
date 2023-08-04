@@ -20,12 +20,8 @@ export interface RoomUser {
 export interface VotingSession {
   id: string;
   room: Room;
-  result: { point: number; count: number }[];
-}
-
-export interface Vote {
-  id: string;
-  voting_session: VotingSession;
-  user: User;
-  point: number;
+  votes?: {
+    [key: number]: number;
+  };
+  result?: { point: number; count: number }[];
 }
