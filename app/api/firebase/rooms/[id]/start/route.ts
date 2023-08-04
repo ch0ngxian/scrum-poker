@@ -7,7 +7,7 @@ const firestore = getFirestore(app);
 export async function POST(request: Request, context: { params: { id: string } }) {
   const roomDocRef = doc(firestore, `rooms/${context.params.id}`);
   const room = await getDoc(roomDocRef);
-  if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 500 });
+  if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
   const sessionDocRef = await addDoc(collection(firestore, "voting_sessions"), {
     room: roomDocRef,

@@ -7,7 +7,7 @@ const firestore = getFirestore(app);
 export async function POST(request: Request, context: { params: { handle: string; id: number } }) {
   const roomDocRef = doc(firestore, `rooms/${context.params.id}`);
   const room = await getDoc(roomDocRef);
-  if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 500 });
+  if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
   // const { data: votingSession } = await supabase
   //   .from("voting_sessions")

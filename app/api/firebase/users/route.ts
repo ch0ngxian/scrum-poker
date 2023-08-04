@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   const id = cookies().get("u")?.value;
 
   const snapshot = await getDoc(doc(firestore, `users/${id}`));
-  if (!snapshot.exists()) return NextResponse.json({ error: "Invalid user ID" }, { status: 500 });
+  if (!snapshot.exists()) return NextResponse.json({ error: "Invalid user ID" }, { status: 422 });
 
   return NextResponse.json({ id: snapshot.id, ...snapshot.data() });
 }

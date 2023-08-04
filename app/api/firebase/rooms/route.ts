@@ -8,11 +8,11 @@ const DEFAULT_ALLOWED_POINTS = [1, 2, 3, 5, 8, 13];
 
 export async function POST(request: Request) {
   const id = cookies().get("u")?.value;
-  if (!id) return NextResponse.json({ error: "User ID is required" }, { status: 500 });
+  if (!id) return NextResponse.json({ error: "User ID is required" }, { status: 422 });
 
   const userDocRef = doc(firestore, `users/${id}`);
   const user = await getDoc(userDocRef);
-  if (!user.exists()) return NextResponse.json({ error: "Invalid user ID" }, { status: 500 });
+  if (!user.exists()) return NextResponse.json({ error: "Invalid user ID" }, { status: 422 });
 
   const roomDocRef = await addDoc(collection(firestore, "rooms"), {
     owner: userDocRef,

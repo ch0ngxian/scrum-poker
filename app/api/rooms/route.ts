@@ -6,10 +6,10 @@ export async function POST(request: Request) {
   const supabase = createRouteHandlerClient({ cookies });
 
   const token = cookies().get("u")?.value;
-  if (!token) return NextResponse.json({ error: "User token is require" }, { status: 500 });
+  if (!token) return NextResponse.json({ error: "User token is require" }, { status: 422 });
 
   const { data: user } = await supabase.from("users").select("id").eq("token", token).limit(1).single();
-  if (!user) return NextResponse.json({ error: "User not found" }, { status: 500 });
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
   const { data: room, error } = await supabase
     .from("rooms")
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     .limit(1)
     .single();
 
-  if (!room) return NextResponse.json({ error: error }, { status: 500 });
+  if (!room) return NextResponse.json({ error: error }, { status: 404 });
 
   return NextResponse.json(room);
 }
