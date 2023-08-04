@@ -35,5 +35,5 @@ export async function GET(request: Request, context: { params: { id: string } })
   if (!session.exists()) return NextResponse.json({ error: "Session not found" }, { status: 404 });
 
   const { votes } = session.data();
-  return NextResponse.json({ point: votes[id] });
+  return NextResponse.json({ point: votes?.[id] });
 }
