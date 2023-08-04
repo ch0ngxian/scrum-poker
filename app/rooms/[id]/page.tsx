@@ -10,6 +10,11 @@ import MemberList from "./components/MemberList";
 import StartRoomView from "./components/StartRoomView";
 import Image from "next/image";
 import JoinRoomView from "./components/JoinRoomView";
+import { collection, query, where, onSnapshot, getFirestore, doc } from "firebase/firestore";
+import app from "@/lib/firebase";
+import { Ubuntu } from "next/font/google";
+
+const firestore = getFirestore(app);
 
 type RoomParams = {
   params: {
@@ -47,7 +52,26 @@ export default function RoomView({ params }: RoomParams) {
       return room;
     };
 
+    const listenVotingSessionStart = () => {
+      const roomRef = doc(firestore, "rooms", params.id);
+
+      const q = query(collection(firestore, "voting_sessions"), where("room", "==", roomRef));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            setVotingSession({ id: change.doc.id, ...change.doc.data() } as VotingSession);
+          }
+        });
+      });
+      return unsubscribe;
+    };
+
     getRoom();
+    const unsubscribe = listenVotingSessionStart();
+
+    return () => {
+      unsubscribe();
+    };
   }, [params.id, router]);
 
   if (isLoading) return <LoadingSkeleton></LoadingSkeleton>;
@@ -55,7 +79,7 @@ export default function RoomView({ params }: RoomParams) {
 
   const isOwner = room.owner.id == Cookies.get("u");
 
-  const revealResult = async (sessionId: number) => {
+  const revealResult = async (sessionId: string) => {
     const response = await fetch(`/api/firebase/rooms/${room.id}/sessions/${sessionId}/reveal`, {
       method: "POST",
     });

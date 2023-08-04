@@ -12,20 +12,20 @@ export interface Room {
 }
 
 export interface RoomUser {
-  id: number;
-  room_id: number;
-  user_id: number;
+  id: string;
+  room_id: string;
+  user_id: string;
 }
 
 export interface VotingSession {
-  id: number;
-  room_id: number;
+  id: string;
+  room: Room;
   result: { point: number; count: number }[];
 }
 
 export interface Vote {
-  id: number;
-  voting_session_id: number;
-  user_id: number;
+  id: string;
+  voting_session: VotingSession;
+  user: User;
   point: number;
 }
