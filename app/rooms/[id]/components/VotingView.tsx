@@ -23,12 +23,12 @@ function PointCard({ point, isSelected, ...props }: PointCardProps) {
   );
 }
 
-export default function VotingCards({ session, allowPoints }: { session: VotingSession; allowPoints: number[] }) {
+export default function VotingView({ session, allowPoints }: { session: VotingSession; allowPoints: number[] }) {
   const [selectedPoint, setSelectedPoint] = useState<number | null>();
   const vote = async (point: number) => {
     setSelectedPoint(point);
 
-    await fetch(`/api/firebase/rooms/${session.room_id}/sessions/${session.id}/votes`, {
+    await fetch(`/api/firebase/rooms/${session.room.id}/sessions/active/votes`, {
       method: "POST",
       body: JSON.stringify({ point: point }),
     });
@@ -36,7 +36,7 @@ export default function VotingCards({ session, allowPoints }: { session: VotingS
 
   useEffect(() => {
     const getSelectedPoint = async () => {
-      const response = await fetch(`/api/firebase/rooms/${session.room_id}/sessions/${session.id}/votes`);
+      const response = await fetch(`/api/firebase/rooms/${session.room.id}/sessions/active/votes`);
       const vote = (await response.json()) as Vote;
       if (!vote) return;
 

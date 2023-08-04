@@ -5,12 +5,12 @@ import { Room, User, VotingSession } from "@/lib/types";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import VotingCards from "./components/VotingCards";
+import VotingView from "./components/VotingView";
 import MemberList from "./components/MemberList";
 import StartRoomView from "./components/StartRoomView";
 import Image from "next/image";
 import JoinRoomView from "./components/JoinRoomView";
-import { collection, query, where, onSnapshot, getFirestore, doc, DocumentReference, getDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, getFirestore, doc } from "firebase/firestore";
 import app from "@/lib/firebase";
 
 const firestore = getFirestore(app);
@@ -101,7 +101,7 @@ export default function RoomView({ params }: RoomParams) {
 
     return (
       <div>
-        <VotingCards session={votingSession} allowPoints={room.allowed_points}></VotingCards>
+        <VotingView session={votingSession} allowPoints={room.allowed_points}></VotingView>
         <div className="flex justify-center">
           <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
             <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
