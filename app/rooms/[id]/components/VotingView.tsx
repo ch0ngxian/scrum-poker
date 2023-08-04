@@ -40,7 +40,7 @@ export default function VotingView({ session, allowPoints }: { session: VotingSe
       const vote = await response.json();
       if (!vote) return;
 
-      setSelectedPoint(vote);
+      setSelectedPoint(vote.point);
     };
 
     getSelectedPoint();
