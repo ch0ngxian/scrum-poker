@@ -89,7 +89,7 @@ export default function RoomView({ params }: RoomParams) {
   const isOwner = room.owner.id == Cookies.get("u");
 
   const revealResult = async (sessionId: string) => {
-    const response = await fetch(`/api/firebase/rooms/${room.id}/sessions/${sessionId}/reveal`, {
+    await fetch(`/api/firebase/rooms/${room.id}/sessions/${sessionId}/reveal`, {
       method: "POST",
     });
   };

@@ -4,7 +4,7 @@ import app from "@/lib/firebase";
 
 const firestore = getFirestore(app);
 
-export async function POST(request: Request, context: { params: { handle: string; id: number } }) {
+export async function POST(request: Request, context: { params: { id: string; session_id: number } }) {
   const roomDocRef = doc(firestore, `rooms/${context.params.id}`);
   const room = await getDoc(roomDocRef);
   if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 404 });
