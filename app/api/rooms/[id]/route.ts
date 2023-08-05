@@ -9,7 +9,7 @@ export async function GET(request: Request, context: { params: { id: string } })
   const room = await getDoc(roomDocRef);
   if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
-  const { members, owner } = room.data();
+  const { members, owner, active_voting_session } = room.data();
   const memberDocs = await Promise.all(members.map((member: DocumentReference) => getDoc(member)));
   const ownerDoc = await getDoc(owner);
 
@@ -22,6 +22,9 @@ export async function GET(request: Request, context: { params: { id: string } })
     owner: {
       id: ownerDoc.id,
       ...(ownerDoc.data() as { name: string }),
+    },
+    active_voting_session: {
+      id: active_voting_session.id,
     },
   });
 }

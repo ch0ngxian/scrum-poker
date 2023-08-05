@@ -62,43 +62,48 @@ export default function RoomView({ params }: RoomParams) {
 
       setRoom(room);
       setIsLoading(false);
-      return room;
     };
 
-    const listenVotingSession = () => {
-      const roomRef = doc(firestore, "rooms", params.id);
-
-      const q = query(collection(firestore, "voting_sessions"), where("room", "==", roomRef));
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === "added") {
-            setVotingSession({ id: change.doc.id, ...change.doc.data() } as VotingSession);
-          }
-          if (change.type === "modified") {
-            setVotingSession({ id: change.doc.id, ...change.doc.data() } as VotingSession);
-          }
-        });
-      });
-      return unsubscribe;
+    const getActiveVotingSession = async () => {
+      const response = await fetch(`/api/rooms/${params.id}/sessions/active`);
+      const session = (await response.json()) as VotingSession;
+      setVotingSession(session);
     };
 
-    const listenMemberJoin = () => {
+    const listenRoomUpdate = () => {
       const roomRef = doc(firestore, "rooms", params.id);
       const unsubscribe = onSnapshot(roomRef, async (newDoc) => {
         getRoom();
+        getActiveVotingSession();
       });
       return unsubscribe;
     };
 
     getRoom();
+    getActiveVotingSession();
+
+    const unsubscribeListenRoomUpdate = listenRoomUpdate();
+
+    return () => {
+      unsubscribeListenRoomUpdate();
+    };
+  }, [params.id, router]);
+
+  useEffect(() => {
+    const listenVotingSession = () => {
+      if (!room?.active_voting_session?.id) return () => {};
+      const sessionRef = doc(firestore, "voting_sessions", room.active_voting_session.id);
+      const unsubscribe = onSnapshot(sessionRef, async (newDoc) => {
+        setVotingSession({ id: newDoc.id, ...newDoc.data() } as VotingSession);
+      });
+      return unsubscribe;
+    };
     const unsubscribeListenVotingSession = listenVotingSession();
-    const unsubscribeListenMemberJoin = listenMemberJoin();
 
     return () => {
       unsubscribeListenVotingSession();
-      unsubscribeListenMemberJoin();
     };
-  }, [params.id, router]);
+  }, [room?.active_voting_session?.id]);
 
   if (isLoading) return <LoadingSkeleton></LoadingSkeleton>;
   if (!room) return "Empty room";
@@ -107,6 +112,12 @@ export default function RoomView({ params }: RoomParams) {
 
   const revealResult = async (sessionId: string) => {
     await fetch(`/api/sessions/${sessionId}/reveal`, {
+      method: "POST",
+    });
+  };
+
+  const newSession = async () => {
+    await fetch(`/api/rooms/${room.id}/start`, {
       method: "POST",
     });
   };
@@ -159,7 +170,11 @@ export default function RoomView({ params }: RoomParams) {
                   );
                 })}
               </div>
-              {isOwner && <Button className="mt-5">Next</Button>}
+              {isOwner && (
+                <Button className="mt-5" onClick={newSession}>
+                  Next
+                </Button>
+              )}
             </div>
           </div>
         </div>
