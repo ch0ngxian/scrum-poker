@@ -14,7 +14,8 @@ import { onSnapshot, getFirestore, doc } from "firebase/firestore";
 import app from "@/lib/firebase";
 import { useUserContext } from "@/app/user-provider";
 import Chart from "react-google-charts";
-import StopIcon from "@/app/images/Stop";
+import StopIcon from "@/app/images/StopIcon";
+import CheckIcon from "@/app/images/CheckIcon";
 
 const firestore = getFirestore(app);
 
@@ -195,11 +196,21 @@ export default function RoomView({ params }: RoomParams) {
           <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
             <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
               {room.members.map((member, index) => {
+                const isVoted = votingSession.votes && votingSession.votes[member.id] !== undefined ? true : false;
                 return (
                   <div
                     key={index}
-                    className="flex flex-col justify-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
+                    className="flex flex-col justify-center items-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
                   >
+                    {isVoted ? (
+                      <div className="h-10 w-8 flex justify-center items-center bg-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                        <CheckIcon></CheckIcon>
+                      </div>
+                    ) : (
+                      <div className="h-10 w-8 flex justify-center items-center bg-transparent border border-dashed border-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                        ?
+                      </div>
+                    )}
                     <Avatar name={member.name} />
                   </div>
                 );
