@@ -10,10 +10,11 @@ import MemberList from "./components/MemberList";
 import StartRoomView from "./components/StartRoomView";
 import Image from "next/image";
 import JoinRoomView from "./components/JoinRoomView";
-import { collection, query, where, onSnapshot, getFirestore, doc } from "firebase/firestore";
+import { onSnapshot, getFirestore, doc } from "firebase/firestore";
 import app from "@/lib/firebase";
 import { useUserContext } from "@/app/user-provider";
 import Chart from "react-google-charts";
+import StopIcon from "@/app/images/Stop";
 
 const firestore = getFirestore(app);
 
@@ -156,14 +157,21 @@ export default function RoomView({ params }: RoomParams) {
             <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
               <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
                 {room.members.map((member, index) => {
+                  const selectedPoint = votingSession.votes[member.id];
                   return (
                     <div
                       key={index}
                       className="flex flex-col justify-center items-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
                     >
-                      <div className="h-10 w-8 flex justify-center items-center bg-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
-                        {votingSession.votes[member.id]}
-                      </div>
+                      {selectedPoint === undefined ? (
+                        <div className="h-10 w-8 flex justify-center items-center bg-transparent border border-dashed border-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                          <StopIcon></StopIcon>
+                        </div>
+                      ) : (
+                        <div className="h-10 w-8 flex justify-center items-center bg-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                          {selectedPoint}
+                        </div>
+                      )}
                       <Avatar name={member.name} />
                     </div>
                   );
