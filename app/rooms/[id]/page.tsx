@@ -13,6 +13,7 @@ import JoinRoomView from "./components/JoinRoomView";
 import { collection, query, where, onSnapshot, getFirestore, doc } from "firebase/firestore";
 import app from "@/lib/firebase";
 import { useUserContext } from "@/app/user-provider";
+import Chart from "react-google-charts";
 
 const firestore = getFirestore(app);
 
@@ -30,6 +31,17 @@ function LoadingSkeleton() {
           <div className={`flex justify-center items-center h-full w-full text-[#515e6a]}`}></div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function Avatar({ name }: { name: string }) {
+  return (
+    <div className="flex flex-col justify-center">
+      <div className="rounded-full mx-3 mb-1 flex justify-center items-center h-10 w-10 flex-wrap relative overflow-hidden bg-[#EEEEFF] ring ring-[#333333]">
+        <Image width={24} height={24} src={`https://api.dicebear.com/6.x/identicon/png?seed=${name}`} alt={name} />
+      </div>
+      {name}
     </div>
   );
 }
@@ -103,7 +115,55 @@ export default function RoomView({ params }: RoomParams) {
 
   if (user && isJoined && votingSession) {
     if (votingSession.result) {
-      return <div>Chart</div>;
+      const header = ["Point", "Count"];
+      const data = Object.entries(votingSession.result).map(([point, count]) => {
+        return [point, count];
+      });
+
+      return (
+        <div>
+          <Chart
+            chartType="PieChart"
+            data={[header, ...data]}
+            options={{
+              is3D: true,
+              backgroundColor: "transparent",
+              legend: "none",
+              pieSliceText: "label",
+              pieSliceTextStyle: {
+                fontName: "__Inter_0ec1f4",
+                fontSize: "20",
+              },
+              colors: ["#c256d6", "#7a79fe", "#5b97f2", "#64d39b", "#fac83b", "#ff9c48", "#fb7b4a"],
+              tooltip: {
+                trigger: "none",
+              },
+            }}
+            width={"100%"}
+            height={"500px"}
+          />
+          <div className="flex justify-center">
+            <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
+              <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
+                {room.members.map((member, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col justify-center items-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
+                    >
+                      <div className="h-10 w-8 flex justify-center items-center bg-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                        {votingSession.votes[member.id]}
+                      </div>
+                      <Avatar name={member.name} />
+                    </div>
+                  );
+                })}
+              </div>
+              {isOwner && <Button className="mt-5">Next</Button>}
+            </div>
+          </div>
+        </div>
+      );
     }
 
     return (
@@ -118,10 +178,7 @@ export default function RoomView({ params }: RoomParams) {
                     key={index}
                     className="flex flex-col justify-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
                   >
-                    <div className="rounded-full mx-3 mb-1 flex justify-center items-center h-10 w-10 flex-wrap relative overflow-hidden bg-[#EEEEFF] border border-[#333333]">
-                      <Image width={24} height={24} src={`https://api.dicebear.com/6.x/identicon/png?seed=${member.name}`} alt={member.name} />
-                    </div>
-                    {member.name}
+                    <Avatar name={member.name} />
                   </div>
                 );
               })}

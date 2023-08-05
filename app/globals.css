@@ -141,3 +141,7 @@ button.secondary {
     opacity: 100%;
   }
 }
+
+.div.google-visualization-tooltip {
+  @apply bg-transparent;
+}

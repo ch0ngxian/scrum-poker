@@ -20,8 +20,10 @@ export interface RoomUser {
 export interface VotingSession {
   id: string;
   room: Room;
-  votes?: {
-    [key: number]: number;
+  votes: {
+    [key: string]: number;
   };
-  result?: { point: number; count: number }[];
+  result?: {
+    [point: number]: number;
+  };
 }
