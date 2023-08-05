@@ -67,6 +67,8 @@ export default function RoomView({ params }: RoomParams) {
     const getActiveVotingSession = async () => {
       const response = await fetch(`/api/rooms/${params.id}/sessions/active`);
       const session = (await response.json()) as VotingSession;
+      if (!session.id) return;
+
       setVotingSession(session);
     };
 
@@ -78,9 +80,6 @@ export default function RoomView({ params }: RoomParams) {
       });
       return unsubscribe;
     };
-
-    getRoom();
-    getActiveVotingSession();
 
     const unsubscribeListenRoomUpdate = listenRoomUpdate();
 

@@ -23,7 +23,7 @@ export async function GET(request: Request, context: { params: { id: string } })
       id: ownerDoc.id,
       ...(ownerDoc.data() as { name: string }),
     },
-    active_voting_session: {
+    active_voting_session: active_voting_session && {
       id: active_voting_session.id,
     },
   });

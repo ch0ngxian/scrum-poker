@@ -10,7 +10,10 @@ export async function GET(request: Request, context: { params: { id: string } })
   if (!room.exists()) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
   const { active_voting_session } = room.data() as { active_voting_session: DocumentReference };
+  if (!active_voting_session) return NextResponse.json({ error: "No active session" }, { status: 404 });
 
   const session = await getDoc(active_voting_session);
+  if (!session.exists()) return NextResponse.json({ error: "No active session" }, { status: 404 });
+
   return NextResponse.json({ id: session.id, ...session.data() });
 }
