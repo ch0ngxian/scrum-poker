@@ -16,12 +16,16 @@ import Cookies from "js-cookie";
 const firestore = getFirestore(app);
 
 export default function Home() {
-  const [name, setName] = useState("");
-  const [isIllustrationLoaded, setIsIllustrationLoaded] = useState(false);
+  const [name, setName] = useState<string>("");
+  const [isIllustrationLoaded, setIsIllustrationLoaded] = useState<boolean>(false);
   const router = useRouter();
   const [user, createUser] = useUserContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const createRoom = async () => {
+    if (!name) return;
+    setIsLoading(true);
+
     if (!user) await createUser({ name: name });
 
     const response = await fetch("/api/rooms", {
@@ -52,7 +56,9 @@ export default function Home() {
 
             <div className="my-10">
               <Textfield label="Name" value={name} onChange={(event) => setName(event.target.value)}></Textfield>
-              <Button onClick={createRoom}>Create room</Button>
+              <Button onClick={createRoom} isLoading={isLoading}>
+                {isLoading ? "Creating room" : "Create room"}
+              </Button>
             </div>
           </div>
         </div>
