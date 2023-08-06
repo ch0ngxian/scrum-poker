@@ -16,6 +16,7 @@ import Chart from "react-google-charts";
 import StopIcon from "@/app/images/StopIcon";
 import CheckIcon from "@/app/images/CheckIcon";
 import Avatar from "./components/Avatar";
+import Loading from "@/app/images/Loading";
 
 const firestore = getFirestore(app);
 
@@ -25,21 +26,31 @@ type RoomParams = {
   };
 };
 
-function LoadingSkeleton() {
+function LoadingScreen() {
+  const values = ["♾️", "🚀", "🇲🇾", 3, 5, 8, 18, "☕️", "🎉"];
   return (
-    <div className="flex justify-center flex-wrap m-5">
-      {[...Array(6)].map((_, index) => (
-        <div key={index} className="m-3 rounded-lg h-56 w-40 font-semibold text-4xl bg-[#20282E] border-[#3C454D] skeleton-loading">
-          <div className={`flex justify-center items-center h-full w-full text-[#515e6a]}`}></div>
+    <div>
+      <div className="absolute h-screen w-screen flex justify-center items-center text-[#8F8F8F] z-10 backdrop-blur overflow-hidden">
+        <div className="scale-125 flex">
+          <Loading></Loading> Loading room
         </div>
-      ))}
+      </div>
+      <div className="slider-wrapper">
+        <div className="flex items-center slider">
+          {[...values, ...values].map((value, index) => (
+            <div key={index} className={`m-3 rounded-lg font-semibold text-4xl bg-[#20282E] border-[#3C454D]`}>
+              <div className={`flex justify-center items-center h-44 w-32 sm:h-56 sm:w-40 text-[#515e6a]`}>{value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function RoomView({ params }: RoomParams) {
   const router = useRouter();
-  const [isReady, setIsReady] = useState<boolean>(true);
+  const [isReady, setIsReady] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [room, setRoom] = useState<Room | null>(null);
   const [votingSession, setVotingSession] = useState<VotingSession | null>(null);
@@ -97,7 +108,7 @@ export default function RoomView({ params }: RoomParams) {
     };
   }, [room?.active_voting_session?.id]);
 
-  if (isReady) return <LoadingSkeleton></LoadingSkeleton>;
+  if (!isReady) return <LoadingScreen></LoadingScreen>;
   if (!room) return "Empty room";
 
   const isOwner = room.owner.id == Cookies.get("u");

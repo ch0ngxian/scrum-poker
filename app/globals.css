@@ -145,3 +145,44 @@ button.secondary {
 .div.google-visualization-tooltip {
   @apply bg-transparent;
 }
+
+.slider-wrapper {
+  @apply w-screen h-screen;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.slider-wrapper::before,
+.slider-wrapper::after {
+  @apply w-1/2;
+  background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  content: "";
+  height: 100%;
+  position: absolute;
+  z-index: 2;
+}
+
+.slider-wrapper::before {
+  left: 0;
+  top: 0;
+}
+
+.slider-wrapper::after {
+  right: 0;
+  top: 0;
+  transform: rotateZ(180deg);
+}
+
+.slider {
+  height: 100%;
+  animation: scroll 6s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-1656px);
+  }
+}
