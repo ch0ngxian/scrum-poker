@@ -8,6 +8,12 @@ type PointCardProps = ReactDivProps & {
   isSelected: boolean;
 };
 
+type VotingViewProps = ReactDivProps & {
+  session: VotingSession;
+  allowPoints: number[];
+  className?: string;
+};
+
 function PointCard({ point, isSelected, ...props }: PointCardProps) {
   return (
     <div className="glow-rainbow hover:scale-105 transition">
@@ -23,7 +29,7 @@ function PointCard({ point, isSelected, ...props }: PointCardProps) {
   );
 }
 
-export default function VotingView({ session, allowPoints }: { session: VotingSession; allowPoints: number[] }) {
+export default function VotingView({ session, allowPoints, className = "" }: VotingViewProps) {
   const [selectedPoint, setSelectedPoint] = useState<number | null>();
   const vote = async (point: number) => {
     setSelectedPoint(point);
@@ -47,7 +53,7 @@ export default function VotingView({ session, allowPoints }: { session: VotingSe
   }, [session]);
 
   return (
-    <div className="flex justify-center flex-wrap m-5">
+    <div className={`${className} flex justify-center flex-wrap m-5`}>
       {allowPoints.map((point, index) => (
         <PointCard key={index} point={point} isSelected={point == selectedPoint} onClick={() => vote(point)}></PointCard>
       ))}

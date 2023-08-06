@@ -50,6 +50,7 @@ function Avatar({ name }: { name: string }) {
 
 export default function RoomView({ params }: RoomParams) {
   const router = useRouter();
+  const [isReady, setIsReady] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [room, setRoom] = useState<Room | null>(null);
   const [votingSession, setVotingSession] = useState<VotingSession | null>(null);
@@ -63,7 +64,7 @@ export default function RoomView({ params }: RoomParams) {
       if (!room.id) return router.push("/");
 
       setRoom(room);
-      setIsLoading(false);
+      setIsReady(false);
     };
 
     const getActiveVotingSession = async () => {
@@ -95,6 +96,7 @@ export default function RoomView({ params }: RoomParams) {
       if (!room?.active_voting_session?.id) return () => {};
       const sessionRef = doc(firestore, "voting_sessions", room.active_voting_session.id);
       const unsubscribe = onSnapshot(sessionRef, async (newDoc) => {
+        setIsLoading(false);
         setVotingSession({ id: newDoc.id, ...newDoc.data() } as VotingSession);
       });
       return unsubscribe;
@@ -106,18 +108,20 @@ export default function RoomView({ params }: RoomParams) {
     };
   }, [room?.active_voting_session?.id]);
 
-  if (isLoading) return <LoadingSkeleton></LoadingSkeleton>;
+  if (isReady) return <LoadingSkeleton></LoadingSkeleton>;
   if (!room) return "Empty room";
 
   const isOwner = room.owner.id == Cookies.get("u");
 
   const revealResult = async (sessionId: string) => {
+    setIsLoading(true);
     await fetch(`/api/sessions/${sessionId}/reveal`, {
       method: "POST",
     });
   };
 
   const newSession = async () => {
+    setIsLoading(true);
     await fetch(`/api/rooms/${room.id}/start`, {
       method: "POST",
     });
@@ -179,8 +183,8 @@ export default function RoomView({ params }: RoomParams) {
                 })}
               </div>
               {isOwner && (
-                <Button className="mt-5" onClick={newSession}>
-                  Next
+                <Button className="mt-5" onClick={newSession} isLoading={isLoading}>
+                  {isLoading ? "Starting new session" : "Next"}
                 </Button>
               )}
             </div>
@@ -222,8 +226,9 @@ export default function RoomView({ params }: RoomParams) {
                 onClick={() => {
                   revealResult(votingSession.id);
                 }}
+                isLoading={isLoading}
               >
-                Reveal
+                {isLoading ? "Getting result" : "Reveal"}
               </Button>
             )}
           </div>
