@@ -138,55 +138,61 @@ export default function RoomView({ params }: RoomParams) {
 
       return (
         <div>
-          <Chart
-            chartType="PieChart"
-            data={[header, ...data]}
-            options={{
-              is3D: true,
-              backgroundColor: "transparent",
-              legend: "none",
-              pieSliceText: "label",
-              pieSliceTextStyle: {
-                fontName: "__Inter_0ec1f4",
-                fontSize: "20",
-              },
-              colors: ["#c256d6", "#7a79fe", "#5b97f2", "#64d39b", "#fac83b", "#ff9c48", "#fb7b4a"],
-              tooltip: {
-                trigger: "none",
-              },
-            }}
-            width={"100%"}
-            height={"500px"}
-          />
-          <div className="flex justify-center">
-            <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
-              <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
-                {room.members.map((member, index) => {
-                  const selectedPoint = votingSession.votes[member.id];
-                  return (
-                    <div
-                      key={index}
-                      className="flex flex-col justify-center items-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
-                    >
-                      {selectedPoint === undefined ? (
-                        <div className="h-10 w-8 flex justify-center items-center bg-transparent border border-dashed border-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
-                          <StopIcon></StopIcon>
-                        </div>
-                      ) : (
-                        <div className="h-10 w-8 flex justify-center items-center bg-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
-                          {selectedPoint}
-                        </div>
-                      )}
-                      <Avatar name={member.name} />
-                    </div>
-                  );
-                })}
+          {data.length > 0 ? (
+            <Chart
+              chartType="PieChart"
+              data={[header, ...data]}
+              options={{
+                is3D: true,
+                backgroundColor: "transparent",
+                legend: "none",
+                pieSliceText: "label",
+                pieSliceTextStyle: {
+                  fontName: "__Inter_0ec1f4",
+                  fontSize: "20",
+                },
+                colors: ["#c256d6", "#7a79fe", "#5b97f2", "#64d39b", "#fac83b", "#ff9c48", "#fb7b4a"],
+                tooltip: {
+                  trigger: "none",
+                },
+              }}
+              width={"100%"}
+              height={"500px"}
+            />
+          ) : (
+            <div className="h-96 flex justify-center items-center">No votes</div>
+          )}
+          <div className="absolute bottom-0 w-full">
+            <div className="flex justify-center m-10">
+              <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
+                <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
+                  {room.members.map((member, index) => {
+                    const selectedPoint = votingSession.votes?.[member.id];
+                    return (
+                      <div
+                        key={index}
+                        className="flex flex-col justify-center items-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
+                      >
+                        {selectedPoint === undefined ? (
+                          <div className="h-10 w-8 flex justify-center items-center bg-transparent border border-dashed border-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                            <StopIcon></StopIcon>
+                          </div>
+                        ) : (
+                          <div className="h-10 w-8 flex justify-center items-center bg-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                            {selectedPoint}
+                          </div>
+                        )}
+                        <Avatar name={member.name} />
+                      </div>
+                    );
+                  })}
+                </div>
+                {isOwner && (
+                  <Button className="mt-5" onClick={newSession} isLoading={isLoading}>
+                    {isLoading ? "Starting new session" : "Next"}
+                  </Button>
+                )}
               </div>
-              {isOwner && (
-                <Button className="mt-5" onClick={newSession} isLoading={isLoading}>
-                  {isLoading ? "Starting new session" : "Next"}
-                </Button>
-              )}
             </div>
           </div>
         </div>
@@ -196,41 +202,43 @@ export default function RoomView({ params }: RoomParams) {
     return (
       <div>
         <VotingView session={votingSession} allowPoints={room.allowed_points}></VotingView>
-        <div className="flex justify-center">
-          <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
-            <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
-              {room.members.map((member, index) => {
-                const isVoted = votingSession.votes && votingSession.votes[member.id] !== undefined ? true : false;
-                return (
-                  <div
-                    key={index}
-                    className="flex flex-col justify-center items-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
-                  >
-                    {isVoted ? (
-                      <div className="h-10 w-8 flex justify-center items-center bg-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
-                        <CheckIcon></CheckIcon>
-                      </div>
-                    ) : (
-                      <div className="h-10 w-8 flex justify-center items-center bg-transparent border border-dashed border-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
-                        ?
-                      </div>
-                    )}
-                    <Avatar name={member.name} />
-                  </div>
-                );
-              })}
+        <div className="absolute bottom-0 w-full z-10">
+          <div className="flex justify-center m-10">
+            <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
+              <div className="flex items-start rounded-lg bg-black p-3 overflow-scroll w-full">
+                {room.members.map((member, index) => {
+                  const isVoted = votingSession.votes && votingSession.votes[member.id] !== undefined ? true : false;
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col justify-center items-center text-center text-xs text-gray-500 first-of-type:ml-auto last-of-type:mr-auto"
+                    >
+                      {isVoted ? (
+                        <div className="h-10 w-8 flex justify-center items-center bg-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                          <CheckIcon></CheckIcon>
+                        </div>
+                      ) : (
+                        <div className="h-10 w-8 flex justify-center items-center bg-transparent border border-dashed border-[#20282E] rounded-md font-semibold mb-3 text-[#525E6A] text-lg">
+                          ?
+                        </div>
+                      )}
+                      <Avatar name={member.name} />
+                    </div>
+                  );
+                })}
+              </div>
+              {isOwner && (
+                <Button
+                  className="mt-5"
+                  onClick={() => {
+                    revealResult(votingSession.id);
+                  }}
+                  isLoading={isLoading}
+                >
+                  {isLoading ? "Getting result" : "Reveal"}
+                </Button>
+              )}
             </div>
-            {isOwner && (
-              <Button
-                className="mt-5"
-                onClick={() => {
-                  revealResult(votingSession.id);
-                }}
-                isLoading={isLoading}
-              >
-                {isLoading ? "Getting result" : "Reveal"}
-              </Button>
-            )}
           </div>
         </div>
       </div>

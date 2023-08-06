@@ -11,7 +11,12 @@ export async function POST(request: Request, context: { params: { id: string } }
   if (!session.exists()) return NextResponse.json({ error: "Session not found" }, { status: 404 });
 
   const { votes } = session.data() as VotingSession;
-  if (!votes) return NextResponse.json({ error: "Votes not found" }, { status: 404 });
+  if (!votes) {
+    await updateDoc(sessionDocRef, { result: {} });
+    return NextResponse.json({
+      success: true,
+    });
+  }
 
   const result = Object.values(votes).reduce((x: any, y: any) => ((x[y] = (x[y] || 0) + 1), x), {});
   await updateDoc(sessionDocRef, { result: result });
