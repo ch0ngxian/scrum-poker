@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function JoinRoomView({ room, isJoined }: { room: Room; isJoined: boolean }) {
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [user, createUser] = useUserContext();
 
   useEffect(() => {
@@ -14,6 +15,8 @@ export default function JoinRoomView({ room, isJoined }: { room: Room; isJoined:
 
   async function joinRoom() {
     if (!name) return;
+
+    setIsLoading(true);
     if (!user) await createUser({ name: name });
 
     await fetch(`/api/rooms/${room.id}/join`, { method: "POST" });
@@ -32,7 +35,9 @@ export default function JoinRoomView({ room, isJoined }: { room: Room; isJoined:
             <Textfield className="w-full" label="Name" value={name} onChange={(event) => setName(event.target.value)}></Textfield>
           </div>
 
-          <Button onClick={joinRoom}>Join room</Button>
+          <Button onClick={joinRoom} isLoading={isLoading}>
+            {isLoading ? "Joining" : "Join room"}
+          </Button>
         </div>
       </div>
     </div>
