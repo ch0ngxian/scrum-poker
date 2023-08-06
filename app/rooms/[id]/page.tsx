@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import VotingView from "./components/VotingView";
 import MemberList from "./components/MemberList";
 import StartRoomView from "./components/StartRoomView";
-import Image from "next/image";
 import JoinRoomView from "./components/JoinRoomView";
 import { onSnapshot, getFirestore, doc } from "firebase/firestore";
 import app from "@/lib/firebase";
@@ -16,6 +15,7 @@ import { useUserContext } from "@/app/user-provider";
 import Chart from "react-google-charts";
 import StopIcon from "@/app/images/StopIcon";
 import CheckIcon from "@/app/images/CheckIcon";
+import Avatar from "./components/Avatar";
 
 const firestore = getFirestore(app);
 
@@ -33,17 +33,6 @@ function LoadingSkeleton() {
           <div className={`flex justify-center items-center h-full w-full text-[#515e6a]}`}></div>
         </div>
       ))}
-    </div>
-  );
-}
-
-function Avatar({ name }: { name: string }) {
-  return (
-    <div className="flex flex-col justify-center">
-      <div className="rounded-full mx-3 mb-1 flex justify-center items-center h-10 w-10 flex-wrap relative overflow-hidden bg-[#EEEEFF] ring ring-[#333333]">
-        <Image width={24} height={24} src={`https://api.dicebear.com/6.x/identicon/png?seed=${name}`} alt={name} />
-      </div>
-      {name}
     </div>
   );
 }

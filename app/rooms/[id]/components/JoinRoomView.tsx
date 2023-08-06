@@ -24,13 +24,17 @@ export default function JoinRoomView({ room, isJoined }: { room: Room; isJoined:
   }
 
   return (
-    <div className="p-5 rounded-md bg-[#111111] border border-[#333333]">
-      <div className="text-center font-semibold">Join {`${room.owner.name}'s`} room</div>
-      <div className="flex justify-between my-3">
-        <Textfield label="Name" value={name} onChange={(event) => setName(event.target.value)}></Textfield>
-      </div>
+    <div className="absolute bottom-0 w-full z-10">
+      <div className="flex justify-center m-10">
+        <div className="p-5 rounded-md bg-[#111111] border border-[#333333] min-w-[20rem] w-1/2">
+          <div className="text-center font-semibold">Join {`${room.owner.name}'s`} room</div>
+          <div className="flex justify-between my-3">
+            <Textfield className="w-full" label="Name" value={name} onChange={(event) => setName(event.target.value)}></Textfield>
+          </div>
 
-      <Button onClick={joinRoom}>Join room</Button>
+          <Button onClick={joinRoom}>Join room</Button>
+        </div>
+      </div>
     </div>
   );
 }
