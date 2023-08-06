@@ -8,6 +8,7 @@ import { useUserContext } from "./user-provider";
 import { Room, User } from "@/lib/types";
 import Image from "next/image";
 import background from "./images/background.svg";
+import logo from "./images/logo.png";
 import Spline from "@splinetool/react-spline";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import app from "@/lib/firebase";
@@ -51,8 +52,9 @@ export default function Home() {
       </div>
       <div className="flex w-full h-full glassmorphism">
         <div className="w-full flex flex-col justify-center items-center px-10 md:px-36">
-          <div className="glassmorphism bg-[#111111] bg-opacity-20 w-full px-10 py-32 rounded-xl border border-[#d5d5d5] border-opacity-30 shadow">
-            <h1 className="font-bold text-6xl">Scrum Poker</h1>
+          <div className="glassmorphism bg-[#111111] bg-opacity-20 w-full px-10 py-20 rounded-xl border border-[#d5d5d5] border-opacity-30 shadow">
+            <Image className="h-16 w-16 mb-5" src={logo} alt="" />
+            <h1 className="font-bold text-5xl">Scrum Poker</h1>
 
             <div className="my-10">
               <Textfield label="Name" value={name} onChange={(event) => setName(event.target.value)}></Textfield>
@@ -66,6 +68,7 @@ export default function Home() {
           <Spline onLoad={onIllustrationLoaded} scene="https://draft.spline.design/da7yHzCYeQv732d6/scene.splinecode" />
         </div>
       </div>
+      <div className="absolute bg-transparent">built by Chong Xian</div>
     </main>
   );
 }
