@@ -3,8 +3,11 @@ import { Room } from "@/lib/types";
 import { useState } from "react";
 
 export default function StartRoomView({ room }: { room: Room }) {
-  const [isCopied, setIsCopied] = useState(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const startRoom = async () => {
+    setIsLoading(true);
     await fetch(`/api/rooms/${room.id}/start`, {
       method: "POST",
     });
@@ -26,7 +29,7 @@ export default function StartRoomView({ room }: { room: Room }) {
         <div className="flex justify-between my-3">
           <div className="rounded bg-black p-3 text-sm text-[#888888] w-full break-words">{`${window.location.href}`}</div>
           <button
-            className="hidden lg:flex ml-5 px-3 py-1 border border-[#333333] rounded-md justify-center items-center cursor-pointer"
+            className="hidden lg:flex text-base w-24 ml-5 px-3 py-1 border border-[#333333] rounded-md justify-center items-center cursor-pointer"
             onClick={() => copyLink(window.location.href)}
           >
             {isCopied ? "Copied" : "Copy"}
@@ -37,8 +40,8 @@ export default function StartRoomView({ room }: { room: Room }) {
           {isCopied ? "Copied" : "Copy"}
         </Button>
 
-        <Button className="mt-5" onClick={startRoom}>
-          Start
+        <Button className="mt-5" onClick={startRoom} isLoading={isLoading}>
+          {isLoading ? "Starting" : "Start"}
         </Button>
       </div>
     </div>

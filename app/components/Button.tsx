@@ -12,8 +12,8 @@ export const Button = ({ className = "", isLoading = false, ...props }: ButtonPr
     <button
       disabled={isLoading}
       className={`${
-        isLoading ? "bg-[#1A1A1A] border border-[#333333] text-[#8F8F8F]" : "bg-white hover:bg-[#CCCCCC] border border-white  text-black "
-      } transition flex justify-center items-center rounded-md w-full mt-3 px-2 py-3 ${className}`}
+        isLoading ? "bg-[#1A1A1A] border border-[#333333] text-[#8F8F8F]" : "bg-white hover:bg-[#CCCCCC] border border-white text-black"
+      } ${className} transition flex justify-center items-center rounded-md w-full mt-3 px-2 py-3`}
       {...props}
     >
       {isLoading && <Loading></Loading>}
