@@ -53,7 +53,7 @@ export default function VotingView({ session, allowPoints, className = "" }: Vot
   }, [session]);
 
   return (
-    <div className={`${className} flex justify-center flex-wrap m-5`}>
+    <div className={`${className} flex justify-center flex-wrap m-5 xl:mt-20`}>
       {allowPoints.map((point, index) => (
         <PointCard key={index} point={point} isSelected={point == selectedPoint} onClick={() => vote(point)}></PointCard>
       ))}
