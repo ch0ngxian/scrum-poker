@@ -64,11 +64,18 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className={`rounded-md w-full bg-transparent opacity-0 ${isIllustrationLoaded ? "fade-in" : ""}`}>
+        <div className={`hidden md:block rounded-md w-full bg-transparent opacity-0 ${isIllustrationLoaded ? "fade-in" : ""}`}>
           <Spline onLoad={onIllustrationLoaded} scene="https://draft.spline.design/da7yHzCYeQv732d6/scene.splinecode" />
         </div>
       </div>
-      <div className="absolute bg-transparent">built by Chong Xian</div>
+      <div className="absolute bottom-0 w-full z-10">
+        <div className="flex justify-center m-3 text-white md:text-black text-sm opacity-40">
+          built by
+          <a className="ml-1 underline" href="https://www.chongxian.dev/" target="_blank">
+            Chong Xian
+          </a>
+        </div>
+      </div>
     </main>
   );
 }
