@@ -64,7 +64,7 @@ export default function RoomView({ params }: RoomParams) {
       if (!room.id) return router.push("/");
 
       setRoom(room);
-      setIsReady(false);
+      setIsReady(true);
     };
 
     const getActiveVotingSession = async () => {
