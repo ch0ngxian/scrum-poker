@@ -1,5 +1,6 @@
 import { Button } from "@/app/components/Button";
 import { Textfield } from "@/app/components/Textfield";
+import Loading from "@/app/images/Loading";
 import { useUserContext } from "@/app/user-provider";
 import { Room } from "@/lib/types";
 import { useEffect, useState } from "react";
@@ -23,7 +24,11 @@ export default function JoinRoomView({ room, isJoined }: { room: Room; isJoined:
   }
 
   if (isJoined) {
-    return <div>Waiting to start</div>;
+    return (
+      <div className="flex text-[#7e7e7e] mt-10">
+        <Loading></Loading> Waiting host to start
+      </div>
+    );
   }
 
   return (
