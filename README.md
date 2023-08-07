@@ -6,6 +6,6 @@
 </div>
 <br>
 <p align="center">
-  <img src="https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next JS">
-   <img src="https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white" alt="Firebase">
+  <img src="https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=black&color=white" alt="Next JS">
+   <img src="https://img.shields.io/badge/Firebase-white?style=for-the-badge&logo=Firebase" alt="Firebase">
 </p>
