@@ -7,6 +7,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=black&color=white" alt="Next JS">
   <img src="https://img.shields.io/badge/Firebase-white?style=for-the-badge&logo=Firebase" alt="Firebase">
+   <img src="https://img.shields.io/badge/vercel-white.svg?style=for-the-badge&logo=vercel&logoColor=black&color=white" alt="Firebase">
 </p>
 
 ## Getting Started
