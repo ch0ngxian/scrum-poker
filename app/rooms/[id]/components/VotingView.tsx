@@ -50,7 +50,7 @@ export default function VotingView({ session, allowPoints, className = "" }: Vot
     };
 
     getSelectedPoint();
-  }, [session]);
+  }, [session.id]);
 
   return (
     <div className={`${className} flex justify-center flex-wrap m-5 xl:mt-20`}>
